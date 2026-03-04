@@ -70,11 +70,13 @@ export const metadata: Metadata = {
     siteName: "Noah Farrar",
     locale: "en_US",
     type: "website",
+    images: [{ url: "/opengraph-image.png" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Noah Farrar",
     description: "Creative portfolio and personal site of Noah Farrar.",
+    images: ["/opengraph-image.png"],
   },
   robots: {
     index: true,
