@@ -41,12 +41,12 @@ export default function Home() {
           </p>
 
           <div
-            className="flex items-baseline justify-between w-full py-[12px] border-b transition-opacity duration-150 group-hover/list:opacity-30 hover:!opacity-100"
+            className="flex items-baseline justify-between w-full py-[12px] border-b transition-opacity duration-150 hover:opacity-40"
             style={{ borderColor: "rgba(0,0,0,0.06)" }}
           >
             <Link
               href="/thebridge"
-              className="text-[15px] tracking-[-0.3px]"
+              className="text-[14px] tracking-[-0.3px]"
               style={{ color: "#111", fontWeight: 450 }}
             >
               The Bridge
@@ -60,14 +60,14 @@ export default function Home() {
           </div>
 
           <div
-            className="flex items-baseline justify-between w-full py-[12px] border-b transition-opacity duration-150 group-hover/list:opacity-30 hover:!opacity-100"
+            className="flex items-baseline justify-between w-full py-[12px] border-b transition-opacity duration-150 hover:opacity-40"
             style={{ borderColor: "rgba(0,0,0,0.06)" }}
           >
             <a
               href="https://satchel.noahfarrar.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[15px] tracking-[-0.3px]"
+              className="text-[14px] tracking-[-0.3px]"
               style={{ color: "#111", fontWeight: 450 }}
             >
               Satchel

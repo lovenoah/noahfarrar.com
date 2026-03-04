@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
+import TableOfContents from "@/components/bridge/TableOfContents";
 
 const FigmaCard = dynamic(() => import("@/components/bridge/FigmaCard"), {
   ssr: false,
@@ -52,21 +53,23 @@ const bodyStyle = {
 };
 
 const bodyClass =
-  "text-[15px] leading-[1.3em] tracking-[-0.01em]";
+  "text-[14px] leading-[1.3em] tracking-[-0.01em]";
 
 function Section({
+  id,
   title,
   children,
   demo,
 }: {
+  id: string;
   title: string;
   children: React.ReactNode;
   demo: React.ReactNode;
 }) {
   return (
-    <section className="w-full mt-[64px]">
+    <section id={id} className="w-full mt-[64px] scroll-mt-[40px]">
       <h2
-        className="text-[15px] tracking-[-0.01em] leading-[1.3em] mb-[16px]"
+        className="text-[14px] tracking-[-0.01em] leading-[1.3em] mb-[16px]"
         style={{ color: "#030303", fontWeight: 500, fontFamily: "var(--font-geist), sans-serif" }}
       >
         {title}
@@ -85,6 +88,20 @@ function Section({
     </section>
   );
 }
+
+const tocItems = [
+  { id: "design", label: "Design" },
+  { id: "loading-reveal", label: "Loading / Reveal" },
+  { id: "3d-tilt", label: "3D Tilt" },
+  { id: "heart-field", label: "<3 Field" },
+  { id: "color-strip", label: "Color Strip" },
+  { id: "ball-physics", label: "Ball Physics" },
+  { id: "skeleton-reveal", label: "Skeleton Reveal" },
+  { id: "stickers", label: "Stickers" },
+  { id: "frosted-tooltips", label: "Frosted Tooltips" },
+  { id: "click-bursts", label: "Click Bursts" },
+  { id: "code-snippet", label: "Code Snippet" },
+];
 
 export default function TheBridge() {
   const backRef = useRef<HTMLAnchorElement>(null);
@@ -133,6 +150,7 @@ export default function TheBridge() {
       className="flex min-h-dvh justify-center pt-4 sm:pt-[80px] pb-[120px]"
       data-dim-dots="true"
     >
+      <TableOfContents items={tocItems} />
       <div className="flex flex-col w-[440px] max-w-full px-6 sm:px-0">
         {/* Back link - static on mobile, fixed on desktop */}
         <Link
@@ -151,7 +169,7 @@ export default function TheBridge() {
 
         {/* Header */}
         <h1
-          className="text-[15px] tracking-[-0.01em] leading-[1.3em] mb-[6px]"
+          className="text-[14px] tracking-[-0.01em] leading-[1.3em] mb-[6px]"
           style={{ color: "#030303", fontWeight: 500, fontFamily: "var(--font-geist), sans-serif" }}
         >
           The Bridge
@@ -213,7 +231,7 @@ export default function TheBridge() {
         </div>
 
         {/* Design */}
-        <Section title="Design" demo={<FigmaCard />}>
+        <Section id="design" title="Design" demo={<FigmaCard />}>
           <p className={bodyClass} style={bodyStyle}>
             I designed the card layout in Figma first, working out proportions,
             placeholder shapes, border radius, all the stuff I&apos;d normally
@@ -234,7 +252,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Loading / Reveal */}
-        <Section title="Loading / Reveal" demo={<LoadingRevealCard />}>
+        <Section id="loading-reveal" title="Loading / Reveal" demo={<LoadingRevealCard />}>
           <p className={bodyClass} style={bodyStyle}>
             A grid of white tiles covers the entire card on load. They dissolve
             outward from the center using staggered{" "}
@@ -252,7 +270,7 @@ export default function TheBridge() {
         </Section>
 
         {/* 3D Tilt */}
-        <Section title="3D Tilt" demo={<TiltCard />}>
+        <Section id="3d-tilt" title="3D Tilt" demo={<TiltCard />}>
           <p className={bodyClass} style={bodyStyle}>
             A classic. Every frame the card closes 15% of the gap between where
             it is and where it needs to be. It&apos;s always moving, but never
@@ -264,7 +282,7 @@ export default function TheBridge() {
         </Section>
 
         {/* <3 Field */}
-        <Section title="&lt;3 Field" demo={<BreathingDotsCard />}>
+        <Section id="heart-field" title="&lt;3 Field" demo={<BreathingDotsCard />}>
           <p className={bodyClass} style={bodyStyle}>
             Move your cursor through the field and dots within a radius fade in
             with a trailing effect over your last 10 positions, creating a nice
@@ -286,7 +304,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Color Strip */}
-        <Section title="Color Strip" demo={<DitherStripCard />}>
+        <Section id="color-strip" title="Color Strip" demo={<DitherStripCard />}>
           <p className={bodyClass} style={bodyStyle}>
             The strip is always cycling through 41 colors underneath, you just
             can&apos;t see it until you hover over it. Your cursor is basically
@@ -306,7 +324,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Ball Physics */}
-        <Section title="Ball Physics" demo={<BallsCard />}>
+        <Section id="ball-physics" title="Ball Physics" demo={<BallsCard />}>
           <p className={bodyClass} style={bodyStyle}>
             This one was pure play. Ten little colored balls sitting in a row,
             cycling through a palette. Hover one and it launches, bounces off
@@ -321,7 +339,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Skeleton Reveal */}
-        <Section title="Skeleton Reveal" demo={<ProfileRevealCard />}>
+        <Section id="skeleton-reveal" title="Skeleton Reveal" demo={<ProfileRevealCard />}>
           <p className={bodyClass} style={bodyStyle}>
             This is my favorite of the bunch. This felt most like the bridge
             moment between illustration and code.
@@ -342,7 +360,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Stickers */}
-        <Section title="Stickers" demo={<StickersCard />}>
+        <Section id="stickers" title="Stickers" demo={<StickersCard />}>
           <p className={bodyClass} style={bodyStyle}>
             Three stickers, each one constantly doing a little something. A slow
             float on separate timing loops, a gentle rotation rock, and a drop
@@ -371,7 +389,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Frosted Tooltips */}
-        <Section title="Frosted Tooltips" demo={<TooltipsCard />}>
+        <Section id="frosted-tooltips" title="Frosted Tooltips" demo={<TooltipsCard />}>
           <p className={bodyClass} style={bodyStyle}>
             Tooltips with a frosted glass look, blurred backdrop, semi
             transparent white, and subtle border. Each one sways on its own
@@ -390,7 +408,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Click Bursts */}
-        <Section title="Click Bursts" demo={<ClickParticlesCard />}>
+        <Section id="click-bursts" title="Click Bursts" demo={<ClickParticlesCard />}>
           <p className={bodyClass} style={bodyStyle}>
             Click anywhere and a starburst of colored cells blooms out from
             where you clicked. Each click picks a random hue family of eight
@@ -407,7 +425,7 @@ export default function TheBridge() {
         </Section>
 
         {/* Code Snippet */}
-        <Section title="Code Snippet" demo={<TypewriterCard />}>
+        <Section id="code-snippet" title="Code Snippet" demo={<TypewriterCard />}>
           <p className={bodyClass} style={bodyStyle}>
             This types out the actual source code of the card component,
             character by character. It loops forever, clearing and retyping from
