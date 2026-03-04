@@ -1462,6 +1462,53 @@ export default function IDCardWeb() {
     }
   }, [])
 
+  // ——— Auto-popup tooltips when not hovering ——————————————————————————————
+  const autoPopupRef = useRef(null)
+  const lastAutoIdx = useRef(-1)
+
+  useEffect(() => {
+    const stickers = [
+      { enter: handlePinEnter, leave: handlePinLeave },
+      { enter: handleEmailEnter, leave: handleEmailLeave },
+      { enter: handleCodeEnter, leave: handleCodeLeave },
+    ]
+
+    const scheduleNext = () => {
+      // Random interval between 2.5–5s
+      const delay = 2500 + Math.random() * 2500
+      autoPopupRef.current = setTimeout(() => {
+        if (isHoveringRef.current) {
+          scheduleNext()
+          return
+        }
+
+        // Pick a random sticker, avoid repeating the same one
+        let idx
+        do { idx = Math.floor(Math.random() * stickers.length) } while (idx === lastAutoIdx.current && stickers.length > 1)
+        lastAutoIdx.current = idx
+
+        stickers[idx].enter()
+
+        // Hide after 1.5–2.5s
+        const showDuration = 1500 + Math.random() * 1000
+        setTimeout(() => {
+          if (!isHoveringRef.current) {
+            stickers[idx].leave()
+          }
+          scheduleNext()
+        }, showDuration)
+      }, delay)
+    }
+
+    // Start after initial load
+    const startDelay = setTimeout(() => scheduleNext(), 3000)
+
+    return () => {
+      clearTimeout(startDelay)
+      if (autoPopupRef.current) clearTimeout(autoPopupRef.current)
+    }
+  }, [handlePinEnter, handlePinLeave, handleEmailEnter, handleEmailLeave, handleCodeEnter, handleCodeLeave])
+
   // ——— Render ———————————————————————————————————————————————————————————————
   return (
     <div
