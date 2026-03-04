@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #111111;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #2563eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-geist);
+  --font-serif: var(--font-lora);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background-color: #2563eb20;
+  color: var(--foreground);
+}
+
+/* Pop-into-life entrance animation */
+@keyframes entrance {
+  0%   { transform: scale(0); opacity: 0; }
+  40%  { opacity: 1; }
+  70%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes labelIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hand-drawn underline with color cycling + draw in/out loop */
+.squiggle-wrap svg {
+  animation: squiggleDraw 4s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+}
+
+.squiggle-stroke {
+  fill: #E8453C;
+  animation: squiggleColor 12s ease-in-out infinite;
+}
+
+@keyframes squiggleDraw {
+  0% { clip-path: inset(0 100% 0 0); }
+  10% { clip-path: inset(0 0 0 0); }
+  80% { clip-path: inset(0 0 0 0); }
+  90%, 100% { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes squiggleColor {
+  0%, 100% { fill: #E8453C; }
+  16% { fill: #E07B39; }
+  33% { fill: #D4A843; }
+  50% { fill: #5B9E5F; }
+  66% { fill: #4A8DB7; }
+  83% { fill: #9B6EB5; }
 }
