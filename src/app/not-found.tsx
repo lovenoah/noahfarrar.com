@@ -27,7 +27,7 @@ function createParticle(x: number, y: number): Particle {
   };
 }
 
-export default function Portfolio() {
+export default function NotFound() {
   const [mounted, setMounted] = useState(false);
   const skullRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +46,6 @@ export default function Portfolio() {
     requestAnimationFrame(() => setMounted(true));
   }, []);
 
-  // Initialize audio graph (matches web-haptics ensureAudio)
   const ensureAudio = useCallback(() => {
     if (audioCtxRef.current) {
       if (audioCtxRef.current.state === "suspended") audioCtxRef.current.resume();
@@ -76,7 +75,6 @@ export default function Portfolio() {
     audioBufferRef.current = buffer;
   }, []);
 
-  // Single click sound (matches web-haptics playClick)
   const playClick = useCallback((intensity: number) => {
     const ctx = audioCtxRef.current;
     const filter = audioFilterRef.current;
@@ -84,7 +82,6 @@ export default function Portfolio() {
     const buffer = audioBufferRef.current;
     if (!ctx || !filter || !gain || !buffer) return;
 
-    // Regenerate noise each click
     const data = buffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) {
       data[i] = (Math.random() * 2 - 1) * Math.exp(-i / 25);
@@ -102,19 +99,17 @@ export default function Portfolio() {
     source.start();
   }, []);
 
-  // Buzz pattern: rapid clicks every 16ms for 1000ms (matches web-haptics buzz preset)
   const playBuzz = useCallback(() => {
     ensureAudio();
 
-    // Cancel any existing buzz
     if (buzzRafRef.current !== null) {
       cancelAnimationFrame(buzzRafRef.current);
       buzzRafRef.current = null;
     }
 
     const intensity = 1;
-    const buzzDuration = 1000; // ms
-    const clickInterval = 16; // g = 16ms at intensity 1
+    const buzzDuration = 1000;
+    const clickInterval = 16;
     let startTime = -1;
     let lastClickTime = -1;
 
@@ -142,7 +137,6 @@ export default function Portfolio() {
     buzzRafRef.current = requestAnimationFrame(tick);
   }, [ensureAudio, playClick]);
 
-  // Canvas resize
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -159,7 +153,6 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-  // Load mini-skull image
   useEffect(() => {
     const img = new Image();
     img.src = "/mini-skull.svg";
@@ -239,12 +232,10 @@ export default function Portfolio() {
     const el = skullRef.current;
     if (!el) return;
 
-    // Buzz sound + particle burst from center of skull
     playBuzz();
     const rect = el.getBoundingClientRect();
     burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
-    // Headshake animation
     el.style.animation = "none";
     el.offsetHeight;
     el.style.animation = "headshake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both";
@@ -329,13 +320,13 @@ export default function Portfolio() {
           className="text-[14px]"
           style={{
             fontFamily: "var(--font-geist), sans-serif",
-            fontWeight: 400,
+            fontWeight: 450,
+            color: "#030303",
             opacity: mounted ? 1 : 0,
             transition: "opacity 0.4s ease-out 0.5s",
           }}
         >
-          <span style={{ color: "#030303" }}>WIP</span>
-          <span style={{ color: "#030303", opacity: 0.45 }}> (for now click me)</span>
+          404
         </p>
       </div>
     </div>

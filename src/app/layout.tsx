@@ -3,7 +3,6 @@ import { Inter, Lora } from "next/font/google";
 import localFont from "next/font/local";
 import { DevTools } from "@/components/dev-tools";
 import { HapticsProvider } from "@/components/haptics-provider";
-import BreathingDots from "@/components/breathing-dots";
 import "./globals.css";
 
 const inter = Inter({
@@ -94,7 +93,6 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${geist.variable} ${geistMono.variable} ${lora.variable} antialiased`}
       >
-        <BreathingDots />
         <HapticsProvider>
           {children}
         </HapticsProvider>

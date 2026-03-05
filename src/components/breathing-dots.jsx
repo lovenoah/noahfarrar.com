@@ -2,6 +2,36 @@
 
 import { useEffect, useRef } from "react"
 
+const config = {
+    dotSpacing: 20,
+    revealRadius: 180,
+    trailLength: 12,
+    trailFalloff: 0.7,
+    dotColor: "#BBBBBB",
+    backgroundColor: "#FAFAFA",
+    breatheSpeed: 0.0006,
+    breatheAmount: 0.12,
+    hoverFadeIn: 0.06,
+    hoverFadeOut: 0.025,
+    heartCount: 5,
+    heartRadius: 50,
+    heartFadeSpeed: 0.04,
+    springStiffness: 0.02,
+    springDamping: 0.9,
+    dotSize: 1.5,
+}
+
+const lerp = (a, b, t) => a + (b - a) * t
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
+
+const simplex2D = (x, y) => {
+    const n =
+        Math.sin(x * 0.5 + y * 0.3) * Math.cos(y * 0.5 - x * 0.2) +
+        Math.sin(x * 0.3 - y * 0.5) * 0.5 +
+        Math.cos(x * 0.2 + y * 0.4) * 0.3
+    return (n + 1) / 2
+}
+
 export default function BreathingDots() {
     const containerRef = useRef(null)
     const canvasRef = useRef(null)
@@ -13,36 +43,6 @@ export default function BreathingDots() {
     const dimFactor = useRef(1)
     const dimTarget = useRef(1)
     const dimRectsRef = useRef([])
-
-    const config = {
-        dotSpacing: 20,
-        revealRadius: 180,
-        trailLength: 12,
-        trailFalloff: 0.7,
-        dotColor: "#BBBBBB",
-        backgroundColor: "#FAFAFA",
-        breatheSpeed: 0.0006,
-        breatheAmount: 0.12,
-        hoverFadeIn: 0.06,
-        hoverFadeOut: 0.025,
-        heartCount: 5,
-        heartRadius: 50,
-        heartFadeSpeed: 0.04,
-        springStiffness: 0.02,
-        springDamping: 0.9,
-        dotSize: 1.5,
-    }
-
-    const lerp = (a, b, t) => a + (b - a) * t
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
-
-    const simplex2D = (x, y) => {
-        const n =
-            Math.sin(x * 0.5 + y * 0.3) * Math.cos(y * 0.5 - x * 0.2) +
-            Math.sin(x * 0.3 - y * 0.5) * 0.5 +
-            Math.cos(x * 0.2 + y * 0.4) * 0.3
-        return (n + 1) / 2
-    }
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -307,9 +307,7 @@ export default function BreathingDots() {
             mousePos.current = { x: -1000, y: -1000 }
         }
 
-        const handleResize = () => {
-            initDots()
-        }
+        const handleResize = initDots
 
         const updateDimRects = () => {
             const containerRect = container.getBoundingClientRect()
@@ -334,7 +332,7 @@ export default function BreathingDots() {
         // Listen on window so it works even when behind other elements
         window.addEventListener("mousemove", handleMouseMove)
         window.addEventListener("resize", handleResize)
-        window.addEventListener("scroll", updateDimRects)
+        window.addEventListener("scroll", updateDimRects, { passive: true })
 
         return () => {
             cancelAnimationFrame(animationRef.current)

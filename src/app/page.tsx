@@ -2,6 +2,7 @@
 
 import IDCardWeb from "@/components/id-card-web";
 import IDCardMobile from "@/components/id-card-mobile";
+import BreathingDots from "@/components/breathing-dots";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,17 +19,6 @@ type LinkEntry = {
 const links: LinkEntry[] = [
   { label: "The Bridge", href: "/thebridge", meta: "03/01/2026", type: "writing" },
   { label: "Satchel", href: "https://satchel.noahfarrar.me", meta: "v1.0", type: "experiment", external: true },
-  // --- test rows (remove later) ---
-  { label: "Test Writing A", href: "/thebridge", meta: "02/15/2026", type: "writing" },
-  { label: "Test Experiment B", href: "/thebridge", meta: "v0.3", type: "experiment" },
-  { label: "Test Writing C", href: "/thebridge", meta: "01/20/2026", type: "writing" },
-  { label: "Test Experiment D", href: "/thebridge", meta: "v0.1", type: "experiment" },
-  { label: "Test Writing E", href: "/thebridge", meta: "12/05/2025", type: "writing" },
-  { label: "Test Experiment F", href: "/thebridge", meta: "v2.0", type: "experiment" },
-  { label: "Test Writing G", href: "/thebridge", meta: "11/10/2025", type: "writing" },
-  { label: "Test Experiment H", href: "/thebridge", meta: "v0.7", type: "experiment" },
-  { label: "Test Writing I", href: "/thebridge", meta: "10/01/2025", type: "writing" },
-  { label: "Test Experiment J", href: "/thebridge", meta: "v1.2", type: "experiment" },
 ];
 
 export default function Home() {
@@ -87,21 +77,17 @@ export default function Home() {
       : "homeDotArc 400ms ease-in-out";
   }, []);
 
-  // Keep ref in sync with touchIdx state
-  useEffect(() => {
-    touchIdxRef.current = touchIdx;
-  }, [touchIdx]);
-
   // Touch handlers for mobile scrubber — only activates on left half of screen
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const touch = e.touches[0];
-    if (touch.clientX > window.innerWidth / 2) return; // right half = normal scroll
+    if (touch.clientX > window.innerWidth / 2) return;
     isTouching.current = true;
     cacheRects();
     const idx = getClosestIdx(touch.clientY);
     if (idx !== null) {
       setTouchIdx(idx);
-      prevIdx.current = null; // reset so first snap triggers arc
+      touchIdxRef.current = idx;
+      prevIdx.current = null;
       try { trigger("selection"); } catch {}
     }
   }, [cacheRects, getClosestIdx, trigger]);
@@ -138,14 +124,8 @@ export default function Home() {
     const el = itemRefs.current.get(idx);
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    // Recache rects after scroll settles
-    setTimeout(() => {
-      cachedRects.current.clear();
-      itemRefs.current.forEach((item, i) => {
-        cachedRects.current.set(i, item.getBoundingClientRect());
-      });
-    }, 150);
-  }, []);
+    setTimeout(cacheRects, 150);
+  }, [cacheRects]);
 
   // Native touchmove with { passive: false } so preventDefault blocks scroll
   useEffect(() => {
@@ -168,6 +148,7 @@ export default function Home() {
         && clientY >= listRect.top - verticalPadding && clientY <= listRect.bottom + verticalPadding;
 
       if (!isInBounds) {
+        isTouching.current = false;
         setTouchIdx(null);
         touchIdxRef.current = null;
         return;
@@ -217,6 +198,8 @@ export default function Home() {
   const activeType = activeIdx !== null ? links[activeIdx].type : null;
 
   return (
+    <>
+    <BreathingDots />
     <div className="flex min-h-dvh justify-center pt-[120px] pb-[120px]">
       <div className="flex flex-col items-center w-[310px] sm:w-[440px] max-w-full sm:px-0">
         <div
@@ -330,5 +313,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }
