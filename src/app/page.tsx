@@ -40,6 +40,8 @@ export default function Home() {
   const activeIdx = hoveredIdx ?? touchIdx;
 
   useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
     requestAnimationFrame(() => setMounted(true));
   }, []);
 
