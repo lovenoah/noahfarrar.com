@@ -2,13 +2,6 @@
 
 Personal website and portfolio built with Next.js 16, React 19, and Tailwind CSS 4.
 
-## Pages
-
-- **Home** — ID card with links to writings and experiments, touch-friendly row scrubber with haptic feedback
-- **The Bridge** — Long-form writing page with scrollspy table of contents
-- **Portfolio** — Project showcase
-- **404** — Custom not-found page
-
 ## Stack
 
 - [Next.js](https://nextjs.org) 16 (App Router)
