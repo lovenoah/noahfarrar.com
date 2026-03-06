@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 
 const SPRITE_FRAMES = 8;
 const SPRITE_FRAME_DURATION = 100;
@@ -42,7 +42,7 @@ function stepT(t: number) {
   return Math.round(t * ASSEMBLY_STEPS) / ASSEMBLY_STEPS;
 }
 
-export default function SpriteWithTrail({ containerWidth, onClick, mounted, showBubble = true }: { containerWidth: number; onClick?: () => void; mounted: boolean; showBubble?: boolean }) {
+export default function SpriteWithTrail({ containerWidth, onClick, mounted, showBubble = true, bubbleText = "click me" }: { containerWidth: number; onClick?: () => void; mounted: boolean; showBubble?: boolean; bubbleText?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const assemblyRef = useRef<HTMLCanvasElement>(null);
   const spriteRef = useRef<HTMLImageElement>(null);
@@ -53,9 +53,11 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
   const frameTimerRef = useRef(0);
   const particlesRef = useRef<Particle[]>([]);
   const bubbleTimer = useRef({ showAt: 4000, hideAt: 0, visible: false });
+  const hoveredRef = useRef(false);
   const popRef = useRef({ started: false, waiting: 0, t: 0 });
   const cellsRef = useRef<SpriteCell[]>([]);
-  const [frame, setFrame] = useState(1);
+  const prevCanvasW = useRef(0);
+  const prevCanvasH = useRef(0);
 
   useEffect(() => {
     const img = new Image();
@@ -113,7 +115,9 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       if (frameTimerRef.current >= SPRITE_FRAME_DURATION) {
         frameTimerRef.current -= SPRITE_FRAME_DURATION;
         frameRef.current = (frameRef.current % SPRITE_FRAMES) + 1;
-        setFrame(frameRef.current);
+        if (spriteRef.current) {
+          spriteRef.current.src = `/sprites/00${frameRef.current}.svg`;
+        }
       }
 
       const progress = ((ts % runDuration) / runDuration);
@@ -140,8 +144,10 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
         spriteRef.current.style.transform = facingRight ? "scaleX(1)" : "scaleX(-1)";
         const fadeIn = assembled ? 1 : pop.t > 0.7 ? (pop.t - 0.7) / 0.3 : 0;
         spriteRef.current.style.opacity = String(fadeIn);
-        const rect = spriteRef.current.getBoundingClientRect();
-        (window as any).__spritePos = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        if (elapsed % 200 < dt) {
+          const rect = spriteRef.current.getBoundingClientRect();
+          (window as any).__spritePos = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        }
       }
 
       if (hitboxRef.current) {
@@ -197,12 +203,13 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
           }
         }
         if (bubbleRef.current) {
+          const show = bt.visible || hoveredRef.current;
           const sway = Math.sin(elapsed * 0.0018) * 3 + Math.sin(elapsed * 0.0031) * 1.5;
           const bob = Math.sin(elapsed * 0.0025) * 2 + Math.cos(elapsed * 0.0014) * 1;
           const rock = Math.sin(elapsed * 0.002) * 2.5 + Math.cos(elapsed * 0.0035) * 1.5;
           bubbleRef.current.style.left = `${spriteX + SPRITE_W / 2}px`;
-          bubbleRef.current.style.opacity = bt.visible ? "1" : "0";
-          bubbleRef.current.style.transform = bt.visible
+          bubbleRef.current.style.opacity = show ? "1" : "0";
+          bubbleRef.current.style.transform = show
             ? `translateX(calc(-50% + ${sway}px)) translateY(${bob}px) rotate(${rock}deg)`
             : "translateX(-50%) translateY(4px) rotate(0deg)";
         }
@@ -225,18 +232,25 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       }
 
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = containerWidth * dpr;
-      canvas.height = (SPRITE_H + 20) * dpr;
+      const cw = containerWidth * dpr;
+      const ch = (SPRITE_H + 20) * dpr;
+      if (prevCanvasW.current !== cw || prevCanvasH.current !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+        prevCanvasW.current = cw;
+        prevCanvasH.current = ch;
+      }
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, containerWidth, SPRITE_H + 20);
 
       const particles = particlesRef.current;
-      for (let i = particles.length - 1; i >= 0; i--) {
+      let len = particles.length;
+      for (let i = len - 1; i >= 0; i--) {
         const p = particles[i];
         p.life -= dt / 1000 / p.maxLife;
         if (p.life <= 0) {
-          particles.splice(i, 1);
+          particles[i] = particles[--len];
           continue;
         }
         ctx.globalAlpha = p.life * p.life * 0.7;
@@ -244,6 +258,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
         const s = p.size * (0.5 + p.life * 0.5);
         ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
       }
+      particles.length = len;
       ctx.globalAlpha = 1;
 
       rafRef.current = requestAnimationFrame(tick);
@@ -251,7 +266,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [containerWidth, mounted]);
+  }, [containerWidth, mounted, showBubble]);
 
   return (
     <>
@@ -280,7 +295,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       />
       <img
         ref={spriteRef}
-        src={`/sprites/00${frame}.svg`}
+        src="/sprites/001.svg"
         alt=""
         width={SPRITE_W}
         height={SPRITE_H}
@@ -297,6 +312,8 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       <div
         ref={hitboxRef}
         onClick={onClick}
+        onMouseEnter={() => { hoveredRef.current = true; }}
+        onMouseLeave={() => { hoveredRef.current = false; }}
         style={{
           position: "absolute",
           bottom: -4,
@@ -325,7 +342,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
           letterSpacing: "-0.02em",
         }}
       >
-        click me
+        {bubbleText}
       </div>}
     </>
   );

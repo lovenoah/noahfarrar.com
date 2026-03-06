@@ -12,9 +12,6 @@ const LoadingRevealCard = dynamic(
   () => import("@/components/bridge/LoadingRevealCard"),
   { ssr: false }
 );
-const TiltCard = dynamic(() => import("@/components/bridge/TiltCard"), {
-  ssr: false,
-});
 const BreathingDotsCard = dynamic(
   () => import("@/components/bridge/BreathingDotsCard"),
   { ssr: false }
@@ -82,7 +79,7 @@ function Section({
       <div
         style={{
           width: "100%",
-          borderRadius: 20,
+          borderRadius: 16,
           boxShadow: "0 2px 20px rgba(0,0,0,0.06)",
           overflow: "hidden",
         }}
@@ -96,7 +93,6 @@ function Section({
 const tocItems = [
   { id: "design", label: "Design" },
   { id: "loading-reveal", label: "Loading / Reveal" },
-  { id: "3d-tilt", label: "3D Tilt" },
   { id: "sprite-runner", label: "Sprite Runner" },
   { id: "heart-field", label: "<3 Field" },
   { id: "color-strip", label: "Color Strip" },
@@ -208,22 +204,20 @@ export default function TheBridge() {
         {/* Intro */}
         <div className="space-y-[20px]">
           <p className={bodyClass} style={bodyStyle}>
-            I&apos;ve always loved art, illustration, design, the way things
-            look and feel. And I&apos;ve always quietly admired people who can
-            just open a code editor and make something exist.
+            I&apos;m an illustrator / designer who always quietly admired
+            people who could open a code editor and make something exist.
           </p>
           <p className={bodyClass} style={bodyStyle}>
-            This project was the first real bridge between those two worlds.
-            Design first, then figuring out how to make it real in code.
-            Working with Claude made that jump feel less like a wall and more
-            like a conversation.
+            For me, this project has been learning to cross that bridge in
+            real time. Not by learning to code in the traditional sense, but
+            by treating the entire process like a design problem and using
+            tools like Claude as a collaborator to close the gap between what
+            I could envision and what I could build.
           </p>
           <p className={bodyClass} style={bodyStyle}>
-            Here&apos;s a breakdown of every interactive moment on my homepage
-            card. What I was going for, how it works under the hood, and what
-            it was like to build as a{" "}
+            Here&apos;s a{" "}
             <span className="squiggle-wrap" style={{ position: "relative", display: "inline-block" }}>
-              very
+              fun
               <svg
                 style={{
                   position: "absolute",
@@ -243,31 +237,17 @@ export default function TheBridge() {
                 />
               </svg>
             </span>{" "}
-            visual learner who used to shy away from dev tools.
+            breakdown of the interactive moments on my homepage.
           </p>
         </div>
 
         {/* Design */}
         <Section id="design" title="Design" demo={<FigmaCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Started in Figma. Proportions, spacing, border radius, all of it
+            Started in Figma. Proportions, spacing, border radius, all
             mapped out before touching code. That wireframe became the
-            blueprint for every component, so building in React was just
-            matching what was already on the artboard.
-          </p>
-          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            The demo above replays a 7-second animation timeline that
-            mirrors my actual workflow: select an element, show its
-            dimensions, resize the strip, animate the spacing indicators.
-            The cursor follows bezier paths between points with{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              easeInOutCubic
-            </code>{" "}
-            easing, and those little selection handles are calculated from
-            element bounds with sub-pixel nudging.
+            blueprint for every component, so building in React was really
+            just matching what was already on the artboard.
           </p>
         </Section>
 
@@ -298,39 +278,17 @@ export default function TheBridge() {
             >
               cubic-bezier(0.34, 1.56, 0.64, 1)
             </code>{" "}
-            over 650ms for the overshoot landing. Auto-cycles every 5 seconds.
-          </p>
-        </Section>
-
-        {/* 3D Tilt */}
-        <Section id="3d-tilt" title="3D Tilt" demo={<TiltCard />}>
-          <p className={bodyClass} style={bodyStyle}>
-            A classic. The card sits in{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              perspective(800px)
-            </code>{" "}
-            and tilts up to &plusmn;8&deg; on each axis based on cursor
-            position. Each frame it closes 15% of the gap between current and
-            target rotation, so it&apos;s always moving but never arriving all
-            at once. On leave, the target resets to zero and it glides back
-            with a{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              500ms ease-out
-            </code>
-            .
+            over 650ms for that overshoot landing.
           </p>
         </Section>
 
         {/* Sprite Runner */}
         <Section id="sprite-runner" title="Sprite Runner" demo={<SpriteRunnerCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Eight hand-drawn SVG frames cycling at 100ms, rendered with{" "}
+            I wanted the site to have a little character alive and running
+            along with you while you navigate. The character is 8 SVG frames
+            I designed by hand on a simple 8px grid in Figma, cycling at
+            100ms, rendered with{" "}
             <code
               className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
               style={{ background: "rgba(0,0,0,0.05)" }}
@@ -345,14 +303,14 @@ export default function TheBridge() {
               scaleX(-1)
             </code>{" "}
             at each turn. Sparkle particles spawn every 40ms behind him from
-            a hand-picked 8-color palette, fading with squared opacity so
+            a hand-picked 8 color palette, fading with squared opacity so
             they dissolve rather than vanish.
           </p>
           <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            Every few seconds he reassembles from scattered cells. The first
-            SVG frame gets drawn to a hidden canvas and sampled on an 8&times;8
-            grid, extracting each colored pixel as a 3px cell. Each cell starts
-            at a random radial point and converges with{" "}
+            Every time the page loads, he reassembles from scattered cells.
+            The first SVG frame gets drawn to a hidden canvas and sampled on
+            an 8&times;8 grid, extracting each colored pixel as a 3px cell.
+            Each cell starts at a random radial point and converges with{" "}
             <code
               className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
               style={{ background: "rgba(0,0,0,0.05)" }}
@@ -362,6 +320,11 @@ export default function TheBridge() {
             quantized to 8 steps so the motion feels chunky like his pixel
             frame rate. The real sprite cross-fades in at 70% progress so you
             never see a hard swap.
+          </p>
+          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
+            A cool easter egg: his component is nuclear, so wherever you
+            navigate on the site, his journey picks up from the same spot as
+            before.
           </p>
         </Section>
 
@@ -387,63 +350,41 @@ export default function TheBridge() {
             </code>{" "}
             glyphs and linger before reverting.
           </p>
-          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            When idle, an ambient sweep runs every 2.5&ndash;5.5 seconds with
-            random edge-to-edge paths and{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              easeInOutQuad
-            </code>{" "}
-            timing so the field is never completely still. The reveal radius
-            itself pulses on a sine wave so even a stationary cursor breathes.
-          </p>
         </Section>
 
         {/* Color Strip */}
         <Section id="color-strip" title="Color Strip" demo={<DitherStripCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            41 colors cycling underneath at all times, your cursor just acts
-            as a flashlight. The reveal uses a gaussian falloff{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              exp(-d&sup2; &times; 1.5)
-            </code>{" "}
-            with four sine/cosine flow wobble components warping the edge so
-            it never reads as a clean circle.
+            41 colors are always cycling underneath, your cursor just acts
+            as a flashlight.
           </p>
           <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            Each cell&apos;s dither comes from three modular arithmetic
-            sequences with coprime moduli (17, 19, 13) layered and averaged.
-            Deterministic pseudo-randomness, no{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              Math.random()
-            </code>{" "}
-            involved. Opacity is quantized to 50 steps to reduce reflow
-            thrashing.
+            The reveal uses a gaussian falloff with four sine/cosine flow
+            wobble components warping the edge so it never reads as a clean
+            circle. Each cell&apos;s dither comes from three modular
+            arithmetic sequences with coprime moduli (17, 19, 13) layered
+            and averaged. Pseudo-randomness. Opacity is quantized to 50
+            steps to reduce reflow thrashing.
           </p>
         </Section>
 
         {/* Ball Physics */}
         <Section id="ball-physics" title="Ball Physics" demo={<BallsCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Pure play. Ten SVG circles with real physics: gravity at
+            Pure play. No deeper reason. I just wanted to flick things around.
+          </p>
+          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
+            Ten SVG circles with real physics. Gravity at
             0.015px/frame&sup2;, 0.5% drag per frame, 50% vertical restitution
             on bounce. Hover launches one at a random angle within &plusmn;60&deg;
-            upward. After 4&ndash;6 seconds of floating it snaps back home with{" "}
+            upward. After 4 to 6 seconds of floating it snaps back home with{" "}
             <code
               className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
               style={{ background: "rgba(0,0,0,0.05)" }}
             >
               cubic-bezier(0.34, 1.56, 0.64, 1)
             </code>{" "}
-            over 1 second. Colors cycle through 8 values on a 24-second loop,
+            over 1 second. Colors cycle through 8 values on a 24 second loop,
             staggered per ball.
           </p>
         </Section>
@@ -451,22 +392,26 @@ export default function TheBridge() {
         {/* Skeleton Reveal */}
         <Section id="skeleton-reveal" title="Skeleton Reveal" demo={<ProfileRevealCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            My favorite. A 16&times;16 grid of 10px dither cells sits over the
-            profile photo, each one using{" "}
+            My favorite element from the main card. I drew both the pfp and
+            skeleton in Procreate and wanted it to haunt the photo upon hover.
+          </p>
+          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
+            A 16&times;16 grid of 10px dither cells sits over the profile
+            photo, each one using{" "}
             <code
               className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
               style={{ background: "rgba(0,0,0,0.05)" }}
             >
               background-position
             </code>{" "}
-            offsets to sample a skeleton version I drew in Procreate underneath.
-            Hover triggers the same gaussian dither reveal from the color strip,
-            tuned with a softer exponent (1.2 vs 1.5) so it washes across more
+            offsets to sample the skeleton drawing underneath. Hover triggers
+            the same gaussian dither reveal from the color strip, tuned with
+            a softer exponent (1.2 vs 1.5) so it washes across more
             gradually. Only updates the DOM when opacity changes by more than
             0.02 to minimize repaints.
           </p>
           <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            When idle, a random sweep runs every 3&ndash;7 seconds, picking
+            When idle, a random sweep runs every 3 to 7 seconds, picking
             start and end points along random edges of the image and easing
             between them so the skeleton makes an appearance on its own.
           </p>
@@ -475,9 +420,12 @@ export default function TheBridge() {
         {/* Stickers */}
         <Section id="stickers" title="Stickers" demo={<StickersCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Each sticker has its own rock angle range (the pin rocks 8.9&deg;
-            to 12.1&deg;, the email 3.6&deg; to 7.2&deg;) and a micro-float
-            animation on a 7&ndash;9 second loop with staggered offsets so they
+            These are the wayfinding. Little hand-drawn anchors that link out
+            to the rest of my world.
+          </p>
+          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
+            Each sticker has its own rock angle range and a micro-float
+            animation on a 7 to 9 second loop with staggered offsets so they
             never sync up. On hover they lift{" "}
             <code
               className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
@@ -506,7 +454,7 @@ export default function TheBridge() {
             over a semi-transparent white. Each sways on its own 3-axis
             animation (translate + rotate) so they feel like they&apos;re
             hanging. Inside each pill, a 12px dot cycles through 6 colors on
-            a 12-second loop with staggered offsets, blurred to 8px and
+            a 12 second loop with staggered offsets, blurred to 8px and
             bouncing around on its own path. The glow bleeds through the
             frosted surface so it&apos;s always shifting.
           </p>
@@ -515,44 +463,25 @@ export default function TheBridge() {
         {/* Click Bursts */}
         <Section id="click-bursts" title="Click Bursts" demo={<ClickParticlesCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Click anywhere for a starburst: 1 center cell plus 5 rings of 8
-            rays each, snapped to a 10px grid. Each click picks a random hue
-            family of 8 shades, with a 15% chance any cell pulls from an
-            adjacent family for dissonance. Ring-based delay (ring &times; 40ms)
-            staggers the bloom, then each cell follows a 4&ndash;6 step random
-            walk at 20px per step before fading with{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              opacity: t&sup2; &times; 0.7
-            </code>
-            . Outer rings probabilistically skip cells so no two clicks match.
+            A hidden easter egg. Click anywhere on the card and it shoots out
+            little pixel bursts of color.
+          </p>
+          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
+            1 center cell plus 5 rings of 8 rays each, snapped to a 10px
+            grid. Each click picks a random hue family of 8 shades, with a
+            15% chance any cell pulls from an adjacent family for dissonance.
+            Ring-based delay (ring &times; 40ms) staggers the bloom, then
+            each cell follows a 4 to 6 step random walk at 20px per step
+            before fading with opacity. The outer rings probabilistically
+            skip cells so no two clicks match.
           </p>
         </Section>
 
         {/* Code Snippet */}
         <Section id="code-snippet" title="Code Snippet" demo={<TypewriterCard />}>
           <p className={bodyClass} style={bodyStyle}>
-            Types out the actual source code of the card component, tokenized
-            by a custom JavaScript lexer that handles strings, comments,
-            keywords, numbers, and JSX tags. Each token gets a color from a
-            deterministic hash:{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              ((h &lt;&lt; 5) - h + charCode) % palette.length
-            </code>
-            . Typing runs at 30&ndash;55ms per character with random jitter,
-            100ms between lines, and a negative{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              translateY
-            </code>{" "}
-            scrolls the content up as it overflows.
+            A nod to the process itself. The card types out its own source
+            code like it&apos;s showing you how it was made.
           </p>
         </Section>
 
