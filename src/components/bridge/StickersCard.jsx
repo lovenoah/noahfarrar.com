@@ -2,9 +2,9 @@
 
 import { useRef, useCallback, useEffect, useState } from "react"
 
-const portfolioSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/portfolio_sticker_v2.svg"
-const emailSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/email_sticker_v2.svg"
-const socialSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/social_sticker_v2.svg"
+const portfolioSticker = "/assets/portfolio_sticker_v2.svg"
+const emailSticker = "/assets/email_sticker_v2.svg"
+const socialSticker = "/assets/social_sticker_v2.svg"
 
 const STICKERS = [
   { src: portfolioSticker, label: "Portfolio", href: "https://noahfarrar.com/portfolio", float: "floatPin", rock: "rockPin", rockDur: "3s", floatDur: "8s", floatDelay: "0s" },

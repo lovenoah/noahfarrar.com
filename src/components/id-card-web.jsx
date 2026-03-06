@@ -399,9 +399,9 @@ function generateCellAnimations(count) {
 }
 
 // ——— Sticker URLs ———————————————————————————————————————————————————————————
-const portfolioSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/portfolio_sticker_v2.svg"
-const emailSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/email_sticker_v2.svg"
-const socialSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/social_sticker_v2.svg"
+const portfolioSticker = "/assets/portfolio_sticker_v2.svg"
+const emailSticker = "/assets/email_sticker_v2.svg"
+const socialSticker = "/assets/social_sticker_v2.svg"
 
 // ——— Deterministic color from text content ——————————————————————————————————
 function colorFor(text) {
@@ -709,8 +709,8 @@ const PHOTO_COLS = 10
 const PHOTO_ROWS = 10
 const PHOTO_CELL_COUNT = PHOTO_COLS * PHOTO_ROWS
 
-const CHARACTER_BOTTOM = "https://raw.githubusercontent.com/lovenoah/skeleton/main/new%20pfp%20(skeleton).svg"
-const CHARACTER_TOP = "https://raw.githubusercontent.com/lovenoah/skeleton/main/new%20pfp.svg"
+const CHARACTER_BOTTOM = "/assets/pfp-skeleton.svg"
+const CHARACTER_TOP = "/assets/pfp.svg"
 
 // ——— Component ——————————————————————————————————————————————————————————————
 export default function IDCardWeb() {

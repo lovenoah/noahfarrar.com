@@ -385,9 +385,9 @@ function generateCellAnimations(count) {
 }
 
 // ─── Sticker URLs ───────────────────────────────────────────────────────────
-const portfolioSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/portfolio_sticker_v2.svg"
-const emailSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/email_sticker_v2.svg"
-const socialSticker = "https://raw.githubusercontent.com/lovenoah/sticker-assets/main/social_sticker_v2.svg"
+const portfolioSticker = "/assets/portfolio_sticker_v2.svg"
+const emailSticker = "/assets/email_sticker_v2.svg"
+const socialSticker = "/assets/social_sticker_v2.svg"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Inlined from ViewTerminal.jsx
@@ -1629,7 +1629,7 @@ export default function IDCardMobile() {
         }}
       >
         <img
-          src="https://raw.githubusercontent.com/lovenoah/skeleton/main/new%20pfp%20(skeleton).svg"
+          src="/assets/pfp-skeleton.svg"
           alt=""
           draggable={false}
           style={{
@@ -1641,7 +1641,7 @@ export default function IDCardMobile() {
           }}
         />
         <img
-          src="https://raw.githubusercontent.com/lovenoah/skeleton/main/new%20pfp.svg"
+          src="/assets/pfp.svg"
           alt=""
           draggable={false}
           style={{
@@ -1663,7 +1663,7 @@ export default function IDCardMobile() {
               width: 10,
               height: 10,
               pointerEvents: "none",
-              backgroundImage: `url("https://raw.githubusercontent.com/lovenoah/skeleton/main/new%20pfp%20(skeleton).svg")`,
+              backgroundImage: `url("/assets/pfp-skeleton.svg")`,
               backgroundSize: "100px 100px",
               backgroundPosition: `${-cell.x}px ${-cell.y}px`,
               opacity: 0,
