@@ -3,6 +3,7 @@ import { Inter, Lora } from "next/font/google";
 import localFont from "next/font/local";
 import { DevTools } from "@/components/dev-tools";
 import { HapticsProvider } from "@/components/haptics-provider";
+import { Signature } from "@/components/signature";
 import "./globals.css";
 
 const inter = Inter({
@@ -96,6 +97,7 @@ export default function RootLayout({
         <HapticsProvider>
           {children}
         </HapticsProvider>
+        <Signature />
         <DevTools />
       </body>
     </html>

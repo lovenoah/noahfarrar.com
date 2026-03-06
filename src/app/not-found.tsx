@@ -29,6 +29,7 @@ function createParticle(x: number, y: number): Particle {
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false);
+  const [skullSvg, setSkullSvg] = useState("");
   const skullRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -44,6 +45,9 @@ export default function NotFound() {
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
+    fetch("/skull.svg").then(r => r.text()).then(svg => {
+      setSkullSvg(svg.replace('<svg ', '<svg width="88" height="88" '));
+    });
   }, []);
 
   const ensureAudio = useCallback(() => {
@@ -255,6 +259,12 @@ export default function NotFound() {
       style={{ userSelect: "none", WebkitUserSelect: "none" }}
     >
       <style>{`
+        .skull-wrapper svg {
+          width: 100%;
+          height: 100%;
+          display: block;
+          pointer-events: none;
+        }
         @keyframes rockSkull {
           0%, 100% { rotate: 2deg; }
           50% { rotate: -2.6deg; }
@@ -299,21 +309,19 @@ export default function NotFound() {
           ref={skullRef}
           onClick={handleClick}
           style={{
-            width: 100,
-            height: 100,
+            width: 88,
+            height: 88,
             cursor: "pointer",
+            willChange: "transform",
             animation: mounted
               ? "skullEntrance 0.8s both, rockSkull 3.2s ease-in-out infinite -2.2s, floatSkull 8.5s ease-in-out infinite -4s"
               : undefined,
             opacity: mounted ? undefined : 0,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/skull.svg"
-            alt=""
-            draggable={false}
-            style={{ width: "100%", height: "100%", pointerEvents: "none" }}
+          <div
+            className="skull-wrapper"
+            dangerouslySetInnerHTML={{ __html: skullSvg }}
           />
         </div>
         <p
