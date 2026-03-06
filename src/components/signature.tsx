@@ -123,7 +123,7 @@ export function Signature() {
             }}
             d={d}
             stroke="rgba(0,0,0,0.10)"
-            strokeWidth="10"
+            strokeWidth="8"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"

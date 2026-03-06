@@ -222,17 +222,17 @@ export default function BreathingDots() {
                     // Spatial dim: fade dots near dim-zone elements
                     let spatialDim = 1
                     for (const rect of dimRectsRef.current) {
-                        const innerPad = rect.wide ? 40 : 8
-                        const outerFade = rect.wide ? 100 : 20
+                        const innerPad = rect.wide ? 30 : 8
+                        const outerFade = rect.wide ? 200 : 20
                         const dx = Math.max(rect.left - innerPad - dot.x, 0, dot.x - (rect.right + innerPad))
                         const dy = Math.max(rect.top - innerPad - dot.y, 0, dot.y - (rect.bottom + innerPad))
                         const dist = Math.sqrt(dx * dx + dy * dy)
                         if (dist === 0) {
-                            spatialDim = Math.min(spatialDim, 0.08)
+                            spatialDim = Math.min(spatialDim, 0.05)
                         } else if (dist < outerFade) {
                             const t = dist / outerFade
-                            const fade = t * t
-                            spatialDim = Math.min(spatialDim, 0.08 + 0.92 * fade)
+                            const fade = t * t * t
+                            spatialDim = Math.min(spatialDim, 0.05 + 0.95 * fade)
                         }
                     }
 

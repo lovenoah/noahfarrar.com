@@ -16,10 +16,152 @@ type LinkEntry = {
   external?: boolean;
 };
 
-const links: LinkEntry[] = [
+const realLinks: LinkEntry[] = [
   { label: "The Bridge", href: "/thebridge", meta: "03/01/2026", type: "writing" },
   { label: "Satchel", href: "https://satchel.noahfarrar.me", meta: "v1.0", type: "experiment", external: true },
 ];
+
+const links: LinkEntry[] = [...realLinks];
+
+// Sprite run cycle: 8 frames at 100ms each
+const SPRITE_FRAMES = 8;
+const SPRITE_FRAME_DURATION = 100; // ms
+const SPRITE_W = 39;
+const SPRITE_H = 43;
+const SPARKLE_COLORS = ["#93CEFF", "#FF9FB9", "#FFD0B8", "#76AAFF", "#FFEEE5", "#F983CE", "#FACA27", "#5CA466"];
+const CELL_SIZE = 3; // matches sprite pixel cell at display scale
+
+type Particle = {
+  x: number;
+  y: number;
+  life: number;
+  maxLife: number;
+  color: string;
+  size: number;
+};
+
+function SpriteWithTrail({ containerWidth }: { containerWidth: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const spriteRef = useRef<HTMLImageElement>(null);
+  const rafRef = useRef<number>(0);
+  const frameRef = useRef(1);
+  const frameTimerRef = useRef(0);
+  const particlesRef = useRef<Particle[]>([]);
+  const [frame, setFrame] = useState(1);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const runDuration = 6500; // ms, matches animation
+    const maxX = containerWidth - SPRITE_W * 0.4;
+    let lastTime = 0;
+    let spawnAccum = 0;
+
+    const tick = (ts: number) => {
+      if (!lastTime) lastTime = ts;
+      const dt = ts - lastTime;
+      lastTime = ts;
+
+      // Frame cycling
+      frameTimerRef.current += dt;
+      if (frameTimerRef.current >= SPRITE_FRAME_DURATION) {
+        frameTimerRef.current -= SPRITE_FRAME_DURATION;
+        frameRef.current = (frameRef.current % SPRITE_FRAMES) + 1;
+        setFrame(frameRef.current);
+      }
+
+      // Sprite position (triangle wave matching CSS linear back-and-forth)
+      const progress = ((ts % runDuration) / runDuration);
+      const triangleWave = progress < 0.5 ? progress * 2 : 2 - progress * 2;
+      const spriteX = triangleWave * maxX;
+      const facingRight = progress < 0.5;
+
+      // Move sprite element
+      if (spriteRef.current) {
+        spriteRef.current.style.left = `${spriteX}px`;
+        spriteRef.current.style.transform = facingRight ? "scaleX(1)" : "scaleX(-1)";
+      }
+
+      // Spawn sparkle particles behind the character (from feet area)
+      spawnAccum += dt;
+      const spawnInterval = 40;
+      while (spawnAccum >= spawnInterval) {
+        spawnAccum -= spawnInterval;
+        const behindOffset = facingRight ? -4 : SPRITE_W + 4;
+        particlesRef.current.push({
+          x: spriteX + behindOffset + (Math.random() - 0.5) * 10,
+          y: SPRITE_H * 0.55 + (Math.random() - 0.5) * 14,
+          life: 1,
+          maxLife: 0.6 + Math.random() * 0.5,
+          color: SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)],
+          size: CELL_SIZE + Math.random() * 1.5,
+        });
+      }
+
+      // Update & draw particles
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = containerWidth * dpr;
+      canvas.height = (SPRITE_H + 20) * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, containerWidth, SPRITE_H + 20);
+
+      const particles = particlesRef.current;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.life -= dt / 1000 / p.maxLife;
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = p.life * p.life * 0.7;
+        ctx.fillStyle = p.color;
+        const s = p.size * (0.5 + p.life * 0.5);
+        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+      }
+      ctx.globalAlpha = 1;
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [containerWidth]);
+
+  return (
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          width: containerWidth,
+          height: SPRITE_H + 20,
+          pointerEvents: "none",
+        }}
+      />
+      <img
+        ref={spriteRef}
+        src={`/sprites/00${frame}.svg`}
+        alt=""
+        width={SPRITE_W}
+        height={SPRITE_H}
+        style={{
+          imageRendering: "pixelated",
+          display: "block",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          transformOrigin: `${SPRITE_W / 2}px center`,
+        }}
+      />
+    </>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
@@ -35,6 +177,9 @@ export default function Home() {
   const isTouching = useRef(false);
   const touchIdxRef = useRef<number | null>(null);
   const cachedRects = useRef<Map<number, DOMRect>>(new Map());
+  const [spriteRowWidth, setSpriteRowWidth] = useState(310);
+  const spriteRowRef = useRef<HTMLElement>(null);
+  const spriteRoRef = useRef<ResizeObserver | null>(null);
 
   // Unified active index: hover takes priority, then touch
   const activeIdx = hoveredIdx ?? touchIdx;
@@ -43,6 +188,17 @@ export default function Home() {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
     requestAnimationFrame(() => setMounted(true));
+  }, []);
+
+  const spriteRowCallbackRef = useCallback((el: HTMLElement | null) => {
+    (spriteRowRef as React.MutableRefObject<HTMLElement | null>).current = el;
+    if (spriteRoRef.current) { spriteRoRef.current.disconnect(); spriteRoRef.current = null; }
+    if (el) {
+      setSpriteRowWidth(el.clientWidth);
+      const ro = new ResizeObserver(([entry]) => setSpriteRowWidth(entry.contentRect.width));
+      ro.observe(el);
+      spriteRoRef.current = ro;
+    }
   }, []);
 
   // Find closest row to a clientY position
@@ -114,7 +270,7 @@ export default function Home() {
         // Don't clear — let the page transition cover it
       }
     } else {
-      // Finger released outside rows — clear everything
+      // Finger released outside rows or on faux row — clear everything
       setTouchIdx(null);
       setDotY(null);
       prevIdx.current = null;
@@ -197,7 +353,8 @@ export default function Home() {
     setDotY(newY);
   }, [activeIdx, retriggerArc]);
 
-  const activeType = activeIdx !== null ? links[activeIdx].type : null;
+  const activeEntry = activeIdx !== null ? links[activeIdx] : null;
+  const activeType = activeEntry?.type ?? null;
 
   return (
     <>
@@ -218,7 +375,20 @@ export default function Home() {
         </div>
 
         <div
-          className="group/list w-full mt-[40px]"
+          ref={spriteRowCallbackRef}
+          className="w-full mt-[32px] mb-[32px]"
+          style={{
+            position: "relative",
+            height: SPRITE_H + 10,
+            overflow: "visible",
+            ...(mounted ? { opacity: 0, animation: "labelIn 0.4s ease-out both", animationDelay: "0.4s" } : { opacity: 0 }),
+          }}
+        >
+          <SpriteWithTrail containerWidth={spriteRowWidth} />
+        </div>
+
+        <div
+          className="group/list w-full"
           data-dim-dots="wide"
           style={mounted ? { opacity: 0, animation: "labelIn 0.4s ease-out both", animationDelay: "0.5s" } : { opacity: 0 }}
         >
@@ -238,6 +408,16 @@ export default function Home() {
               75% { background-color: #544CAC; }
               87.5% { background-color: #D4D4D4; }
             }
+            @keyframes homeTextColorCycle {
+              0%, 100% { color: #F983CE; }
+              12.5% { color: #FA8D11; }
+              25% { color: #5CA466; }
+              37.5% { color: #F18B91; }
+              50% { color: #0484D4; }
+              62.5% { color: #FACA27; }
+              75% { color: #544CAC; }
+              87.5% { color: #D4D4D4; }
+            }
           `}</style>
           <div
             ref={listRef}
@@ -248,6 +428,12 @@ export default function Home() {
             onTouchCancel={handleTouchEnd}
           >
             {links.map((link, i) => {
+              const isExperimentActive = activeIdx === i && link.type === "experiment";
+              const colorCycleStyle = isExperimentActive
+                ? { animation: "homeTextColorCycle 24s ease-in-out infinite" }
+                : {};
+
+
               const Tag = link.external ? "a" : Link;
               const extraProps = link.external
                 ? { target: "_blank", rel: "noopener noreferrer" }
@@ -258,9 +444,10 @@ export default function Home() {
                   href={link.href}
                   {...extraProps}
                   ref={(el: HTMLElement | null) => { if (el) itemRefs.current.set(i, el); }}
-                  className={`flex items-center justify-between w-full py-[12px] border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? "hover:opacity-40" : ""}`}
+                  className={`flex items-center justify-between w-full border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? "hover:opacity-40" : ""}`}
                   style={{
                     borderColor: "rgba(0,0,0,0.06)",
+                    padding: "12px 0",
                     ...(touchIdx !== null ? { opacity: touchIdx === i ? 1 : 0.35 } : {}),
                   }}
                   onMouseEnter={() => setHoveredIdx(i)}
@@ -275,10 +462,11 @@ export default function Home() {
                     <span
                       className="text-[12px]"
                       style={{
-                        color: "rgba(0,0,0,0.45)",
+                        color: activeIdx === i && link.type === "experiment" ? undefined : "rgba(0,0,0,0.45)",
                         fontFamily: "var(--font-geist-mono), monospace",
                         opacity: activeIdx === i ? 1 : 0,
                         transition: "opacity 150ms",
+                        ...(activeIdx === i && link.type === "experiment" ? { animation: "homeTextColorCycle 24s ease-in-out infinite" } : {}),
                       }}
                     >
                       {link.type === "writing" ? "writing" : "experiment"}
@@ -286,7 +474,11 @@ export default function Home() {
                   </span>
                   <span
                     className="text-[12px]"
-                    style={{ color: "rgba(0,0,0,0.3)", fontFamily: "var(--font-geist-mono), monospace" }}
+                    style={{
+                      color: activeIdx === i && link.type === "experiment" ? undefined : "rgba(0,0,0,0.3)",
+                      fontFamily: "var(--font-geist-mono), monospace",
+                      ...(activeIdx === i && link.type === "experiment" ? { animation: "homeTextColorCycle 24s ease-in-out infinite" } : {}),
+                    }}
                   >
                     {link.meta}
                   </span>
