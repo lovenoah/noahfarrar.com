@@ -101,32 +101,12 @@ export function Signature() {
   }, [animate]);
 
   return (
-    <>
-    <style>{`
-      .signature-fixed {
-        position: fixed;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 50;
-        pointer-events: none;
-      }
-      @media (max-height: 700px) {
-        .signature-fixed {
-          display: none;
-        }
-      }
-      @media (max-width: 639px) {
-        .signature-fixed {
-          position: static;
-          transform: none;
-          display: flex;
-          justify-content: center;
-          padding: 24px 0 40px;
-        }
-      }
-    `}</style>
-    <div className="signature-fixed">
+    <div style={{
+      display: "flex",
+      justifyContent: "center",
+      padding: "24px 0 40px",
+      pointerEvents: "none",
+    }}>
       <svg
         width="120"
         height={Math.round(120 * (SVG_HEIGHT / SVG_WIDTH))}
@@ -152,6 +132,5 @@ export function Signature() {
         ))}
       </svg>
     </div>
-    </>
   );
 }
