@@ -101,7 +101,7 @@ export function Signature() {
   }, [animate]);
 
   return (
-    <div style={{
+    <div data-dim-dots="wide" style={{
       display: "flex",
       justifyContent: "center",
       padding: "24px 0 40px",

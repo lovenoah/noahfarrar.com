@@ -114,9 +114,24 @@ export default function BreathingDots() {
 
             const dots = dotsRef.current
 
+            // Get sprite position in container coords for heart exclusion
+            let spriteLocalX = -9999, spriteLocalY = -9999
+            const spritePos = window.__spritePos
+            if (spritePos) {
+                const containerRect = container.getBoundingClientRect()
+                spriteLocalX = spritePos.x - containerRect.left
+                spriteLocalY = spritePos.y - containerRect.top
+            }
+            const spriteExcludeRadius = 80
+
             let nearestDots = []
             if (mousePos.current.x > -500) {
                 dots.forEach((dot, index) => {
+                    // Exclude dots near the sprite
+                    const sdx = dot.x - spriteLocalX
+                    const sdy = dot.y - spriteLocalY
+                    if (Math.sqrt(sdx * sdx + sdy * sdy) < spriteExcludeRadius) return
+
                     const dx = dot.x - mousePos.current.x
                     const dy = dot.y - mousePos.current.y
                     const dist = Math.sqrt(dx * dx + dy * dy)
@@ -236,8 +251,24 @@ export default function BreathingDots() {
                         }
                     }
 
+                    // Fade dots near the sprite character
+                    let spriteFade = 1
+                    if (spritePos) {
+                        const sdx = dot.x - spriteLocalX
+                        const sdy = dot.y - spriteLocalY
+                        const spriteDist = Math.sqrt(sdx * sdx + sdy * sdy)
+                        const spriteInner = 20
+                        const spriteOuter = 180
+                        if (spriteDist < spriteInner) {
+                            spriteFade = 0.02
+                        } else if (spriteDist < spriteOuter) {
+                            const t = (spriteDist - spriteInner) / (spriteOuter - spriteInner)
+                            spriteFade = 0.02 + 0.98 * t * t * t
+                        }
+                    }
+
                     ctx.fillStyle = config.dotColor
-                    ctx.globalAlpha = dot.opacity * dimFactor.current * spatialDim
+                    ctx.globalAlpha = dot.opacity * dimFactor.current * spatialDim * spriteFade
 
                     if (dot.heartAmount > 0.5) {
                         ctx.font =
