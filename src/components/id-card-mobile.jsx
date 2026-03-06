@@ -798,12 +798,69 @@ export default function IDCardMobile() {
   const ambientAnimRef = useRef(null)
   const scheduleAmbientRef = useRef(null)
 
-  // No overlay on mobile — entrance animation handled by parent CSS
   const overlayRef = useRef(null)
-  const revealedRef = useRef(true)
+  const revealedRef = useRef(false)
 
+  // Loading overlay dither reveal on mount
   useEffect(() => {
-    if (overlayRef.current) overlayRef.current.style.display = "none"
+    const overlay = overlayRef.current
+    if (!overlay) return
+    let cancelled = false
+
+    overlay.innerHTML = ""
+    overlay.style.display = ""
+    overlay.style.background = "white"
+    revealedRef.current = false
+
+    const cols = Math.ceil(CARD_W / 20)
+    const rows = Math.ceil(CARD_H / 20)
+    const centerX = (cols - 1) / 2
+    const centerY = (rows - 1) / 2
+    const maxDist = Math.sqrt(centerX * centerX + centerY * centerY)
+
+    const cells = []
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const el = document.createElement("div")
+        const dx = col - centerX
+        const dy = row - centerY
+        const dist = Math.sqrt(dx * dx + dy * dy) / maxDist
+        const dither = ((col * 7 + row * 13) % 17) / 17 * 0.3
+        const delay = dist * 400 + dither * 150
+        el.style.cssText = `position:absolute;left:${col * 20}px;top:${row * 20}px;width:20px;height:20px;background:white;opacity:1;transition:opacity 0.4s ease-out;transition-delay:${delay.toFixed(0)}ms;`
+        overlay.appendChild(el)
+        cells.push(el)
+      }
+    }
+
+    overlay.style.background = "none"
+
+    const assets = [portfolioSticker, emailSticker, socialSticker, "/assets/pfp-skeleton.svg", "/assets/pfp.svg"]
+    const imageLoads = assets.map(src => new Promise(resolve => {
+      const img = new Image()
+      img.onload = img.onerror = resolve
+      img.src = src
+    }))
+    const minDelay = new Promise(resolve => setTimeout(resolve, 200))
+
+    let hideTimer
+    Promise.all([minDelay, ...imageLoads]).then(() => {
+      if (cancelled) return
+      cells.forEach(el => { el.style.opacity = "0" })
+      hideTimer = setTimeout(() => {
+        if (cancelled) return
+        if (overlayRef.current) {
+          overlayRef.current.style.display = "none"
+        }
+        revealedRef.current = true
+      }, 900)
+    })
+
+    return () => {
+      cancelled = true
+      clearTimeout(hideTimer)
+      overlay.innerHTML = ""
+    }
   }, [])
 
   // Ball physics animation
