@@ -188,21 +188,21 @@ export default function Work() {
   return (
     <>
       <BreathingDots />
-      <Link
-        href="/"
-        data-dim-dots="wide"
-        className="fixed top-[32px] left-[32px] z-50 text-[14px] tracking-[-0.2px] inline-flex items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
-        style={{
-          color: "rgba(0,0,0,0.35)",
-          fontFamily: "var(--font-geist-mono), monospace",
-          transition: "opacity 75ms ease-out",
-          lineHeight: "14px",
-        }}
-      >
-        &larr;
-      </Link>
-      <div className="flex min-h-dvh justify-center pt-[120px] pb-[120px]">
-        <div className="flex flex-col items-center w-[310px] sm:w-[440px] max-w-full sm:px-0">
+      <div className="flex min-h-dvh justify-center pt-4 sm:pt-[80px] pb-[120px]">
+        <div className="flex flex-col items-center w-[310px] sm:w-[440px] max-w-full px-6 sm:px-0">
+          <Link
+            href="/"
+            data-dim-dots="wide"
+            className="mb-[24px] sm:mb-0 sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] inline-flex items-center gap-[6px] self-start hover:opacity-50 transition-opacity duration-75"
+            style={{
+              color: "rgba(0,0,0,0.35)",
+              fontFamily: "var(--font-geist-mono), monospace",
+              transition: "opacity 75ms ease-out",
+              lineHeight: "14px",
+            }}
+          >
+            &larr;
+          </Link>
           <div style={{ position: "relative", width: "100%", height: SPRITE_H + 10, marginBottom: 0 }}>
             <div
               ref={(el) => {

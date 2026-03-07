@@ -107,7 +107,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
 
     const tick = (ts: number) => {
       if (!lastTime) lastTime = ts;
-      const dt = ts - lastTime;
+      const dt = Math.min(ts - lastTime, 100);
       lastTime = ts;
       elapsed += dt;
 
