@@ -189,7 +189,7 @@ export default function Work() {
     <>
       <BreathingDots />
       <div className="flex min-h-dvh justify-center pt-4 sm:pt-[80px] pb-[120px]">
-        <div className="flex flex-col items-center w-[310px] sm:w-[440px] max-w-full px-6 sm:px-0">
+        <div className="flex flex-col items-center w-[440px] max-w-full px-6 sm:px-0">
           <Link
             href="/"
             data-dim-dots="wide"
