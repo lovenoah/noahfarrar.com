@@ -311,7 +311,13 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       />
       <div
         ref={hitboxRef}
-        onClick={onClick}
+        onClick={() => {
+          if (bubbleRef.current) {
+            bubbleRef.current.style.transition = "none";
+            bubbleRef.current.style.opacity = "0";
+          }
+          onClick?.();
+        }}
         onMouseEnter={() => { hoveredRef.current = true; }}
         onMouseLeave={() => { hoveredRef.current = false; }}
         style={{
