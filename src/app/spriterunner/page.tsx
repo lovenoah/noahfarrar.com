@@ -178,11 +178,11 @@ export default function SpriteRunner() {
         {/* Intro */}
         <div className="space-y-[20px]">
           <p className={bodyClass} style={bodyStyle}>
-            I&apos;ve always been a fan of frame by frame animation so I
+            I&apos;ve always loved frame by frame animation so I
             wanted to give a gentle nod to that with this little guy.
-            I&apos;m finding that pairing traditional art and design with
-            modern coding tools and effects is so satisfying to me at a
-            deep personal level.
+          </p>
+          <p className={bodyClass} style={bodyStyle}>
+            Here&apos;s how he works...
           </p>
         </div>
 
