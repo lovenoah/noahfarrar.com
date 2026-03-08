@@ -203,8 +203,9 @@ export default function TheBridge() {
           </p>
           <p className={bodyClass} style={bodyStyle}>
             This project has been about learning to cross that bridge in
-            real time, not by learning to code in the traditional sense, but
-            by using tools like Claude as a means, and leaning into this new{" "}
+            real time, mixing traditional workflows (sketching, vectorizing
+            by hand, etc) with tools like Claude and really leaning into
+            this new{" "}
             <span className="squiggle-wrap" style={{ position: "relative", display: "inline-block" }}>
               superpower
               <svg
@@ -226,10 +227,10 @@ export default function TheBridge() {
                 />
               </svg>
             </span>{" "}
-            us visual designers have at our fingertips.
+            us visual tinkerers have at our fingertips.
           </p>
           <p className={bodyClass} style={bodyStyle}>
-            Here&apos;s a fun breakdown of the interactive moments on my homepage.
+            Here&apos;s a breakdown of the fun interactive moments on my homepage.
           </p>
         </div>
 
