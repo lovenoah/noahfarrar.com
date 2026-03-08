@@ -107,6 +107,10 @@ export default function Work() {
         setDotY(null);
         prevIdx.current = null;
       } else {
+        setTouchIdx(null);
+        setDotY(null);
+        prevIdx.current = null;
+        touchIdxRef.current = null;
         router.push(link.href);
       }
     } else {
