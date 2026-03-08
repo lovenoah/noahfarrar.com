@@ -835,7 +835,7 @@ export default function IDCardMobile() {
 
     overlay.style.background = "none"
 
-    const assets = [portfolioSticker, emailSticker, socialSticker, "/assets/pfp-skeleton.png", "/assets/pfp.png"]
+    const assets = [portfolioSticker, emailSticker, socialSticker, "/assets/pfp-skeleton.svg", "/assets/pfp.svg"]
     const imageLoads = assets.map(src => new Promise(resolve => {
       const img = new Image()
       img.onload = img.onerror = resolve
@@ -1686,7 +1686,7 @@ export default function IDCardMobile() {
         }}
       >
         <img
-          src="/assets/pfp-skeleton.png"
+          src="/assets/pfp-skeleton.svg"
           alt=""
           draggable={false}
           style={{
@@ -1698,7 +1698,7 @@ export default function IDCardMobile() {
           }}
         />
         <img
-          src="/assets/pfp.png"
+          src="/assets/pfp.svg"
           alt=""
           draggable={false}
           style={{
@@ -1720,7 +1720,7 @@ export default function IDCardMobile() {
               width: 10,
               height: 10,
               pointerEvents: "none",
-              backgroundImage: `url("/assets/pfp-skeleton.png")`,
+              backgroundImage: `url("/assets/pfp-skeleton.svg")`,
               backgroundSize: "100px 100px",
               backgroundPosition: `${-cell.x}px ${-cell.y}px`,
               opacity: 0,
