@@ -144,7 +144,7 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
         spriteRef.current.style.transform = facingRight ? "scaleX(1)" : "scaleX(-1)";
         const fadeIn = assembled ? 1 : pop.t > 0.7 ? (pop.t - 0.7) / 0.3 : 0;
         spriteRef.current.style.opacity = String(fadeIn);
-        if (elapsed % 200 < dt) {
+        if (elapsed % 200 < dt && fadeIn > 0) {
           const rect = spriteRef.current.getBoundingClientRect();
           (window as any).__spritePos = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
         }

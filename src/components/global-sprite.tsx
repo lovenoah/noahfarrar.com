@@ -40,7 +40,7 @@ export default function GlobalSprite() {
   }, [pathname, router]);
 
   const bubbleText =
-    pathname === "/" ? "click me!" : pathname === "/work" ? "click for home!" : "Back to the work page!";
+    pathname === "/" ? "click me!" : pathname === "/work" ? "click for home!" : "back to work!";
 
   // Home: inset 40px to clear card border-radius, no divider
   // Other pages: full width run path + divider to match content width

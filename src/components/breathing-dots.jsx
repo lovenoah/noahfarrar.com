@@ -87,6 +87,22 @@ export default function BreathingDots() {
             mouseTrail.current = []
         }
 
+        const updateDimRects = () => {
+            const containerRect = container.getBoundingClientRect()
+            const dimEls = document.querySelectorAll('[data-dim-dots]')
+            dimRectsRef.current = Array.from(dimEls).map((el) => {
+                const r = el.getBoundingClientRect()
+                const isWide = el.getAttribute("data-dim-dots") === "wide"
+                return {
+                    left: r.left - containerRect.left,
+                    top: r.top - containerRect.top,
+                    right: r.right - containerRect.left,
+                    bottom: r.bottom - containerRect.top,
+                    wide: isWide,
+                }
+            })
+        }
+
         const render = () => {
             time.current += 16
 
@@ -339,22 +355,6 @@ export default function BreathingDots() {
         }
 
         const handleResize = initDots
-
-        const updateDimRects = () => {
-            const containerRect = container.getBoundingClientRect()
-            const dimEls = document.querySelectorAll('[data-dim-dots]')
-            dimRectsRef.current = Array.from(dimEls).map((el) => {
-                const r = el.getBoundingClientRect()
-                const isWide = el.getAttribute("data-dim-dots") === "wide"
-                return {
-                    left: r.left - containerRect.left,
-                    top: r.top - containerRect.top,
-                    right: r.right - containerRect.left,
-                    bottom: r.bottom - containerRect.top,
-                    wide: isWide,
-                }
-            })
-        }
 
         initDots()
         updateDimRects()
