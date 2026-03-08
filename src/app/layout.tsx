@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { DevTools } from "@/components/dev-tools";
 import { HapticsProvider } from "@/components/haptics-provider";
 import { Signature } from "@/components/signature";
+import GlobalSprite from "@/components/global-sprite";
 import "./globals.css";
 
 const inter = Inter({
@@ -95,7 +96,10 @@ export default function RootLayout({
         className={`${inter.variable} ${geist.variable} ${geistMono.variable} ${lora.variable} antialiased`}
       >
         <HapticsProvider>
-          {children}
+          <div style={{ position: "relative" }}>
+            <GlobalSprite />
+            {children}
+          </div>
         </HapticsProvider>
         <Signature />
         <DevTools />

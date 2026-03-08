@@ -145,6 +145,7 @@ export default function TableOfContents({ items }: { items: TOCItem[] }) {
         top: 80,
         left: "max(32px, calc(50% - 440px))",
         width: 160,
+        zIndex: 20,
         fontFamily: "var(--font-geist), sans-serif",
       }}
     >

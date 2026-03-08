@@ -1,7 +1,6 @@
 "use client";
 
 import BreathingDots from "@/components/breathing-dots";
-import SpriteWithTrail, { SPRITE_H } from "@/components/sprite-with-trail";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -17,7 +16,8 @@ type LinkEntry = {
 
 const links: LinkEntry[] = [
   { label: "The Bridge", href: "/thebridge", meta: "03/01/2026", type: "writing" },
-  { label: "Satchel", href: "https://satchel.noahfarrar.me", meta: "v1.0", type: "experiment", external: true },
+  { label: "Satchel", href: "https://satchel.noahfarrar.me", meta: "03/04/2026", type: "experiment", external: true },
+  { label: "Sprite Runner", href: "/spriterunner", meta: "03/06/2026", type: "experiment" },
 ];
 
 export default function Work() {
@@ -34,10 +34,9 @@ export default function Work() {
   const isTouching = useRef(false);
   const touchIdxRef = useRef<number | null>(null);
   const cachedRects = useRef<Map<number, DOMRect>>(new Map());
-  const [spriteRowWidth, setSpriteRowWidth] = useState(310);
-  const spriteRoRef = useRef<ResizeObserver | null>(null);
 
   const activeIdx = hoveredIdx ?? touchIdx;
+  const colorOffsets = useRef(links.map(() => -Math.random() * 24));
 
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -66,7 +65,7 @@ export default function Work() {
     });
   }, []);
 
-  const retriggerArc = useCallback((type: "writing" | "experiment") => {
+  const retriggerArc = useCallback((type: "writing" | "experiment", idx?: number) => {
     if (!dotRef.current) return;
     const dot = dotRef.current;
     dot.style.animation = "none";
@@ -74,6 +73,9 @@ export default function Work() {
     dot.style.animation = type === "experiment"
       ? "workDotArc 400ms ease-in-out, workDotColorCycle 24s ease-in-out infinite"
       : "workDotArc 400ms ease-in-out";
+    dot.style.animationDelay = type === "experiment" && idx !== undefined
+      ? `0s, ${colorOffsets.current[idx]}s`
+      : "";
   }, []);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -148,7 +150,7 @@ export default function Work() {
       if (idx !== null) {
         setTouchIdx(prev => {
           if (prev !== idx) {
-            retriggerArc(links[idx].type);
+            retriggerArc(links[idx].type, idx);
             try { trigger("selection"); } catch {}
             scrollActiveRow(idx);
           }
@@ -175,7 +177,7 @@ export default function Work() {
     const type = links[activeIdx].type;
 
     if (prevIdx.current !== null && prevIdx.current !== activeIdx && dotRef.current && !isTouching.current) {
-      retriggerArc(type);
+      retriggerArc(type, activeIdx);
     }
 
     prevIdx.current = activeIdx;
@@ -188,12 +190,12 @@ export default function Work() {
   return (
     <>
       <BreathingDots />
-      <div className="flex min-h-dvh justify-center pt-4 sm:pt-[80px] pb-[120px]">
-        <div className="flex flex-col items-center w-[440px] max-w-full px-6 sm:px-0">
+      <div className="flex min-h-dvh justify-center pt-[120px] pb-[120px]">
+        <div className="flex flex-col w-[440px] max-w-full px-6 sm:px-0">
           <Link
             href="/"
             data-dim-dots="wide"
-            className="mb-[24px] sm:mb-0 sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] inline-flex items-center gap-[6px] self-start hover:opacity-50 transition-opacity duration-75"
+            className="hidden sm:inline-flex sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
             style={{
               color: "rgba(0,0,0,0.35)",
               fontFamily: "var(--font-geist-mono), monospace",
@@ -203,37 +205,6 @@ export default function Work() {
           >
             &larr;
           </Link>
-          <div style={{ position: "relative", width: "100%", height: SPRITE_H + 10, marginBottom: 0 }}>
-            <div
-              ref={(el) => {
-                if (spriteRoRef.current) { spriteRoRef.current.disconnect(); spriteRoRef.current = null; }
-                if (el) {
-                  setSpriteRowWidth(el.clientWidth);
-                  const ro = new ResizeObserver(([entry]) => setSpriteRowWidth(entry.contentRect.width));
-                  ro.observe(el);
-                  spriteRoRef.current = ro;
-                }
-              }}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: SPRITE_H + 10,
-                overflow: "visible",
-                zIndex: 2,
-              }}
-            >
-              <SpriteWithTrail containerWidth={spriteRowWidth} mounted={mounted} showBubble bubbleText="click for home!" onClick={() => router.push("/")} />
-            </div>
-          </div>
-          <div
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: "rgba(0,0,0,0.06)",
-            }}
-          />
           <div
             className="w-full"
             data-dim-dots="wide"
@@ -288,11 +259,11 @@ export default function Work() {
                     href={link.href}
                     {...extraProps}
                     ref={(el: HTMLElement | null) => { if (el) itemRefs.current.set(i, el); }}
-                    className={`flex items-center justify-between w-full border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? "hover:opacity-40" : ""}`}
+                    className={`flex items-center justify-between w-full border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? (link.type === "experiment" ? "hover:opacity-60" : "hover:opacity-40") : ""}`}
                     style={{
                       borderColor: "rgba(0,0,0,0.06)",
                       padding: "12px 0",
-                      ...(touchIdx !== null ? { opacity: touchIdx === i ? 1 : 0.35 } : {}),
+                      ...(touchIdx !== null ? { opacity: touchIdx === i ? 1 : (link.type === "experiment" ? 0.6 : 0.35) } : {}),
                     }}
                     onMouseEnter={() => setHoveredIdx(i)}
                   >
@@ -310,7 +281,7 @@ export default function Work() {
                           fontFamily: "var(--font-geist-mono), monospace",
                           opacity: activeIdx === i ? 1 : 0,
                           transition: "opacity 150ms",
-                          ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite" } : {}),
+                          ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite", animationDelay: `${colorOffsets.current[i]}s` } : {}),
                         }}
                       >
                         {link.type === "writing" ? "writing" : "experiment"}
@@ -321,7 +292,7 @@ export default function Work() {
                       style={{
                         color: activeIdx === i && link.type === "experiment" ? undefined : "rgba(0,0,0,0.3)",
                         fontFamily: "var(--font-geist-mono), monospace",
-                        ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite" } : {}),
+                        ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite", animationDelay: `${colorOffsets.current[i]}s` } : {}),
                       }}
                     >
                       {link.meta}
@@ -341,6 +312,7 @@ export default function Work() {
                     borderRadius: "50%",
                     backgroundColor: activeType === "writing" ? "#030303" : undefined,
                     animation: activeType === "experiment" ? "workDotColorCycle 24s ease-in-out infinite" : undefined,
+                    animationDelay: activeType === "experiment" && activeIdx !== null ? `${colorOffsets.current[activeIdx]}s` : undefined,
                     pointerEvents: "none",
                     transition: "top 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                   }}

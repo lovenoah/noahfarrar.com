@@ -43,10 +43,6 @@ const TypewriterCard = dynamic(
   () => import("@/components/bridge/TypewriterCard"),
   { ssr: false }
 );
-const SpriteRunnerCard = dynamic(
-  () => import("@/components/bridge/SpriteRunnerCard"),
-  { ssr: false }
-);
 
 const bodyStyle = {
   color: "#030303",
@@ -93,7 +89,6 @@ function Section({
 const tocItems = [
   { id: "design", label: "Design" },
   { id: "loading-reveal", label: "Loading / Reveal" },
-  { id: "sprite-runner", label: "Sprite Runner" },
   { id: "heart-field", label: "<3 Field" },
   { id: "color-strip", label: "Color Strip" },
   { id: "ball-physics", label: "Ball Physics" },
@@ -162,16 +157,15 @@ export default function TheBridge() {
 
   return (
     <div
-      className="flex min-h-dvh justify-center pt-4 sm:pt-[80px] pb-[120px]"
+      className="flex min-h-dvh justify-center pt-[148px] pb-[120px]"
       data-dim-dots="true"
     >
       <TableOfContents items={tocItems} />
       <div className="flex flex-col w-[440px] max-w-full px-6 sm:px-0">
-        {/* Back link - static on mobile, fixed on desktop */}
         <Link
           ref={backRef}
           href="/work"
-          className="mb-[24px] sm:mb-0 sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] inline-flex items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
+          className="hidden sm:inline-flex sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
           style={{
             color: "rgba(0,0,0,0.35)",
             fontFamily: "var(--font-geist-mono), monospace",
@@ -282,51 +276,6 @@ export default function TheBridge() {
           </p>
         </Section>
 
-        {/* Sprite Runner */}
-        <Section id="sprite-runner" title="Sprite Runner" demo={<SpriteRunnerCard />}>
-          <p className={bodyClass} style={bodyStyle}>
-            I wanted the site to have a little character alive and running
-            along with you while you navigate. The character is 8 SVG frames
-            I designed by hand on a simple 8px grid in Figma, cycling at
-            100ms, rendered with{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              image-rendering: pixelated
-            </code>
-            . His path is a triangle wave over 6.5 seconds, flipping{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              scaleX(-1)
-            </code>{" "}
-            at each turn. Sparkle particles spawn every 40ms behind him from
-            a hand-picked 8 color palette, fading with squared opacity so
-            they dissolve rather than vanish.
-          </p>
-          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            Every time the page loads, he reassembles from scattered cells.
-            The first SVG frame gets drawn to a hidden canvas and sampled on
-            an 8&times;8 grid, extracting each colored pixel as a 3px cell.
-            Each cell starts at a random radial point and converges with{" "}
-            <code
-              className="text-[13px] px-[4px] py-[1px] rounded-[4px]"
-              style={{ background: "rgba(0,0,0,0.05)" }}
-            >
-              1 - (1-t)&sup3;
-            </code>{" "}
-            quantized to 8 steps so the motion feels chunky like his pixel
-            frame rate. The real sprite cross-fades in at 70% progress so you
-            never see a hard swap.
-          </p>
-          <p className={`${bodyClass} mt-[16px]`} style={bodyStyle}>
-            A cool easter egg: his component is nuclear, so wherever you
-            navigate on the site, his journey picks up from the same spot as
-            before.
-          </p>
-        </Section>
 
         {/* <3 Field */}
         <Section id="heart-field" title="&lt;3 Field" demo={<BreathingDotsCard />}>
