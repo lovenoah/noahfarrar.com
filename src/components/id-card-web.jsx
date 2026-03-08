@@ -1542,7 +1542,9 @@ export default function IDCardWeb() {
             key={`photo-reveal-${i}`}
             ref={el => { photoOverlayRefs.current[i] = el }}
             style={{
-              position: "absolute", left: cell.x, top: cell.y, width: 10, height: 10,
+              position: "absolute", left: 0, top: 0, width: 10, height: 10,
+              transform: `translate(${cell.x}px, ${cell.y}px)`,
+              willChange: "opacity",
               pointerEvents: "none",
               backgroundImage: `url("${CHARACTER_BOTTOM}")`,
               backgroundSize: `${PHOTO_W}px ${PHOTO_H}px`,

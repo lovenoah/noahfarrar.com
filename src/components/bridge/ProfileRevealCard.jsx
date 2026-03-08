@@ -274,8 +274,7 @@ export default function Profile_reveal() {
           width: Math.min(PHOTO_W, containerW - 40),
           height: PHOTO_H,
           overflow: "hidden",
-          border: "0.5px solid #EAECF2",
-          boxSizing: "border-box",
+          outline: "0.5px solid #EAECF2",
           cursor: "pointer",
           touchAction: "none",
         }}
@@ -293,10 +292,12 @@ export default function Profile_reveal() {
               ref={el => { photoOverlayRefs.current[i] = el }}
               style={{
                 position: "absolute",
-                left: cell.x * scale - offset,
-                top: cell.y * scale,
+                left: 0,
+                top: 0,
                 width: PHOTO_W / PHOTO_COLS,
                 height: PHOTO_H / PHOTO_ROWS,
+                transform: `translate(${cell.x * scale - offset}px, ${cell.y * scale}px)`,
+                willChange: "opacity",
                 pointerEvents: "none",
                 backgroundImage: `url("${CHARACTER_BOTTOM}")`,
                 backgroundSize: `${PHOTO_W}px ${PHOTO_H}px`,
