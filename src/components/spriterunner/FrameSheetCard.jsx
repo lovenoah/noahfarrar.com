@@ -8,11 +8,24 @@ const SPRITE_H = 43
 const FRAMES = 8
 const FRAME_DURATION = 100
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)")
+    setMobile(mq.matches)
+    const handler = (e) => setMobile(e.matches)
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
+  }, [])
+  return mobile
+}
+
 export default function FrameSheetCard() {
   const [activeFrame, setActiveFrame] = useState(1)
   const rafRef = useRef(0)
   const lastRef = useRef(0)
   const accumRef = useRef(0)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const tick = (ts) => {
@@ -29,11 +42,11 @@ export default function FrameSheetCard() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [])
 
-  const gap = 6
-  const scale = 1.8
+  const gap = isMobile ? 4 : 6
+  const scale = isMobile ? 1.2 : 1.8
+  const largeScale = isMobile ? 1.2 : 1.5
   const frameW = SPRITE_W * scale
   const frameH = SPRITE_H * scale
-  const totalW = FRAMES * frameW + (FRAMES - 1) * gap
 
   return (
     <div style={{
@@ -51,14 +64,14 @@ export default function FrameSheetCard() {
       {/* Active frame large */}
       <div style={{
         position: "relative",
-        width: SPRITE_W * 1.5,
-        height: SPRITE_H * 1.5,
+        width: SPRITE_W * largeScale,
+        height: SPRITE_H * largeScale,
       }}>
         <img
           src={`/sprites/00${activeFrame}.svg`}
           alt=""
-          width={SPRITE_W * 1.5}
-          height={SPRITE_H * 1.5}
+          width={SPRITE_W * largeScale}
+          height={SPRITE_H * largeScale}
           style={{ imageRendering: "pixelated", display: "block" }}
         />
         {/* 8px grid overlay */}
@@ -69,7 +82,7 @@ export default function FrameSheetCard() {
             linear-gradient(to right, rgba(0,0,0,0.04) 0.5px, transparent 0.5px),
             linear-gradient(to bottom, rgba(0,0,0,0.04) 0.5px, transparent 0.5px)
           `,
-          backgroundSize: `${8 * 1.5}px ${8 * 1.5}px`,
+          backgroundSize: `${8 * largeScale}px ${8 * largeScale}px`,
           pointerEvents: "none",
         }} />
       </div>
@@ -112,6 +125,10 @@ export default function FrameSheetCard() {
 
       {/* Frame counter */}
       <span style={{
+        position: "absolute",
+        bottom: 20,
+        left: "50%",
+        transform: "translateX(-50%)",
         fontFamily: "var(--font-geist-mono), monospace",
         fontSize: 10,
         color: "rgba(0,0,0,0.3)",
