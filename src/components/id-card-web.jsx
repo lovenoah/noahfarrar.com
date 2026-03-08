@@ -1534,7 +1534,7 @@ export default function IDCardWeb() {
       <div ref={clickLayerRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }} />
 
       {/* Picture Frame */}
-      <div style={{ position: "absolute", left: PHOTO_LEFT, top: PHOTO_TOP, width: PHOTO_W, height: PHOTO_H, overflow: "hidden", border: "0.5px solid #EAECF2", boxSizing: "border-box", cursor: "pointer" }}>
+      <div style={{ position: "absolute", left: PHOTO_LEFT, top: PHOTO_TOP, width: PHOTO_W, height: PHOTO_H, overflow: "hidden", outline: "0.5px solid #EAECF2", cursor: "pointer" }}>
         <img src={CHARACTER_BOTTOM} alt="" draggable={false} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
         <img src={CHARACTER_TOP} alt="" draggable={false} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
         {photoDitherPattern.map((cell, i) => (
