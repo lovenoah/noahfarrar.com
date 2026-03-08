@@ -316,6 +316,16 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
             bubbleRef.current.style.transition = "none";
             bubbleRef.current.style.opacity = "0";
           }
+          hoveredRef.current = false;
+          onClick?.();
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          if (bubbleRef.current) {
+            bubbleRef.current.style.transition = "none";
+            bubbleRef.current.style.opacity = "0";
+          }
+          hoveredRef.current = false;
           onClick?.();
         }}
         onMouseEnter={() => { hoveredRef.current = true; }}
@@ -328,8 +338,9 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
           height: SPRITE_H + 20,
           cursor: onClick ? "pointer" : "default",
           zIndex: 3,
+          WebkitTapHighlightColor: "transparent",
         }}
-      />
+      ></div>
       {showBubble && <div
         ref={bubbleRef}
         style={{
