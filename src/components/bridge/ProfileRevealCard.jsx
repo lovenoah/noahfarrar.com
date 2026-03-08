@@ -2,8 +2,8 @@
 
 import { useRef, useEffect, useMemo, useCallback, useState } from "react"
 
-const CHARACTER_BOTTOM = "/assets/pfp-skeleton.svg"
-const CHARACTER_TOP = "/assets/pfp.svg"
+const CHARACTER_BOTTOM = "/assets/pfp-skeleton.png"
+const CHARACTER_TOP = "/assets/pfp.png"
 
 const PHOTO_W = 160
 const PHOTO_H = 160

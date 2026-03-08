@@ -709,8 +709,8 @@ const PHOTO_COLS = 10
 const PHOTO_ROWS = 10
 const PHOTO_CELL_COUNT = PHOTO_COLS * PHOTO_ROWS
 
-const CHARACTER_BOTTOM = "/assets/pfp-skeleton.svg"
-const CHARACTER_TOP = "/assets/pfp.svg"
+const CHARACTER_BOTTOM = "/assets/pfp-skeleton.png"
+const CHARACTER_TOP = "/assets/pfp.png"
 
 // ——— Component ——————————————————————————————————————————————————————————————
 export default function IDCardWeb() {
