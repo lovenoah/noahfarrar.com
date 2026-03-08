@@ -39,7 +39,6 @@ export default function AssemblyCard() {
   const rafRef = useRef(0)
   const containerRef = useRef(null)
   const [containerW, setContainerW] = useState(440)
-  const [frame, setFrame] = useState(1)
   const frameRef = useRef(1)
   const frameTimerRef = useRef(0)
 
@@ -99,7 +98,7 @@ export default function AssemblyCard() {
       if (frameTimerRef.current >= 100) {
         frameTimerRef.current -= 100
         frameRef.current = (frameRef.current % 8) + 1
-        setFrame(frameRef.current)
+        if (spriteRef.current) spriteRef.current.src = '/sprites/00' + frameRef.current + '.svg'
       }
 
       let ce = (ts - cycleStart) % CYCLE
@@ -194,7 +193,7 @@ export default function AssemblyCard() {
       />
       <img
         ref={spriteRef}
-        src={`/sprites/00${frame}.svg`}
+        src="/sprites/001.svg"
         alt=""
         width={SPRITE_W}
         height={SPRITE_H}

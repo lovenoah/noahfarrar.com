@@ -22,6 +22,8 @@ export default function PersistenceCard() {
   const canvasRef = useRef(null)
   const rafRef = useRef(0)
   const [containerW, setContainerW] = useState(440)
+  const prevCW = useRef(0)
+  const prevCH = useRef(0)
   const pageRef = useRef(0)
   const pageSwitchRef = useRef(0)
   const fadeRef = useRef({ t: 0, dir: 0 })
@@ -108,8 +110,14 @@ export default function PersistenceCard() {
 
       // Draw
       const dpr = window.devicePixelRatio || 1
-      canvas.width = containerW * dpr
-      canvas.height = CARD_H * dpr
+      const cw = containerW * dpr
+      const ch = CARD_H * dpr
+      if (prevCW.current !== cw || prevCH.current !== ch) {
+        canvas.width = cw
+        canvas.height = ch
+        prevCW.current = cw
+        prevCH.current = ch
+      }
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.scale(dpr, dpr)
       ctx.clearRect(0, 0, containerW, CARD_H)
@@ -203,7 +211,6 @@ export default function PersistenceCard() {
 function SpriteLayer({ containerW, lineY, pad }) {
   const spriteRef = useRef(null)
   const rafRef = useRef(0)
-  const [frame, setFrame] = useState(1)
   const frameRef = useRef(1)
   const timerRef = useRef(0)
 
@@ -218,7 +225,7 @@ function SpriteLayer({ containerW, lineY, pad }) {
       if (timerRef.current >= FRAME_DURATION) {
         timerRef.current -= FRAME_DURATION
         frameRef.current = (frameRef.current % FRAMES) + 1
-        setFrame(frameRef.current)
+        if (spriteRef.current) spriteRef.current.src = '/sprites/00' + frameRef.current + '.svg'
       }
 
       const runW = containerW - pad * 2 - SPRITE_W
@@ -242,7 +249,7 @@ function SpriteLayer({ containerW, lineY, pad }) {
   return (
     <img
       ref={spriteRef}
-      src={`/sprites/00${frame}.svg`}
+      src="/sprites/001.svg"
       alt=""
       width={SPRITE_W}
       height={SPRITE_H}

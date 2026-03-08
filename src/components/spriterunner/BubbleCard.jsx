@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from "react"
 
 const CARD_H = 240
 const SPRITE_W = 39
@@ -13,7 +13,6 @@ export default function BubbleCard() {
   const spriteRef = useRef(null)
   const bubbleRef = useRef(null)
   const rafRef = useRef(0)
-  const [frame, setFrame] = useState(1)
   const frameRef = useRef(1)
   const timerRef = useRef(0)
 
@@ -32,7 +31,7 @@ export default function BubbleCard() {
       if (timerRef.current >= FRAME_DURATION) {
         timerRef.current -= FRAME_DURATION
         frameRef.current = (frameRef.current % FRAMES) + 1
-        setFrame(frameRef.current)
+        if (spriteRef.current) spriteRef.current.src = '/sprites/00' + frameRef.current + '.svg'
       }
 
       const el = containerRef.current
@@ -92,7 +91,7 @@ export default function BubbleCard() {
     >
       <img
         ref={spriteRef}
-        src={`/sprites/00${frame}.svg`}
+        src="/sprites/001.svg"
         alt=""
         width={SPRITE_W}
         height={SPRITE_H}

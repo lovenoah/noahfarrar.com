@@ -37,7 +37,7 @@ export default function Work() {
 
   const activeIdx = hoveredIdx ?? touchIdx;
   const colorOffsets = useRef(links.map(() => -Math.random() * 24));
-  const dotColorOffset = useRef(-Math.random() * 24);
+  const colorOverlayRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
 
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -184,8 +184,26 @@ export default function Work() {
     setDotY(newY);
   }, [activeIdx, retriggerArc]);
 
-  const activeEntry = activeIdx !== null ? links[activeIdx] : null;
-  const activeType = activeEntry?.type ?? null;
+  // Sync dot color with the active experiment row's cycling text
+  useEffect(() => {
+    if (activeIdx === null) return;
+    const link = links[activeIdx];
+    if (link.type !== "experiment") {
+      if (dotRef.current) dotRef.current.style.backgroundColor = "#030303";
+      return;
+    }
+    const overlay = colorOverlayRefs.current.get(activeIdx);
+    if (!overlay) return;
+    let raf: number;
+    const sync = () => {
+      if (dotRef.current && overlay) {
+        dotRef.current.style.backgroundColor = getComputedStyle(overlay).color;
+      }
+      raf = requestAnimationFrame(sync);
+    };
+    raf = requestAnimationFrame(sync);
+    return () => cancelAnimationFrame(raf);
+  }, [activeIdx]);
 
   return (
     <>
@@ -297,6 +315,7 @@ export default function Work() {
                       {isExperiment && (
                         <span
                           aria-hidden
+                          ref={(el: HTMLSpanElement | null) => { if (el) colorOverlayRefs.current.set(i, el); }}
                           style={{
                             position: "absolute",
                             inset: 0,
@@ -324,10 +343,8 @@ export default function Work() {
                     height: 4,
                     borderRadius: "50%",
                     backgroundColor: "#030303",
-                    animation: activeType === "experiment" ? "workDotColorCycle 24s ease-in-out infinite" : undefined,
-                    animationDelay: activeType === "experiment" ? `${dotColorOffset.current}s` : undefined,
                     pointerEvents: "none",
-                    transition: "top 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    transition: "top 400ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 300ms ease",
                   }}
                 />
               )}

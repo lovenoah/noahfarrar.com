@@ -268,6 +268,15 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
     return () => cancelAnimationFrame(rafRef.current);
   }, [containerWidth, mounted, showBubble]);
 
+  function handleActivate() {
+    if (bubbleRef.current) {
+      bubbleRef.current.style.transition = "none";
+      bubbleRef.current.style.opacity = "0";
+    }
+    hoveredRef.current = false;
+    onClick?.();
+  }
+
   return (
     <>
       <canvas
@@ -311,23 +320,8 @@ export default function SpriteWithTrail({ containerWidth, onClick, mounted, show
       />
       <div
         ref={hitboxRef}
-        onClick={() => {
-          if (bubbleRef.current) {
-            bubbleRef.current.style.transition = "none";
-            bubbleRef.current.style.opacity = "0";
-          }
-          hoveredRef.current = false;
-          onClick?.();
-        }}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          if (bubbleRef.current) {
-            bubbleRef.current.style.transition = "none";
-            bubbleRef.current.style.opacity = "0";
-          }
-          hoveredRef.current = false;
-          onClick?.();
-        }}
+        onClick={() => handleActivate()}
+        onTouchEnd={(e) => { e.preventDefault(); handleActivate(); }}
         onMouseEnter={() => { hoveredRef.current = true; }}
         onMouseLeave={() => { hoveredRef.current = false; }}
         style={{

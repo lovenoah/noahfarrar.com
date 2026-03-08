@@ -19,8 +19,9 @@ export default function MotionPathCard() {
   const rafRef = useRef(0)
   const frameRef = useRef(1)
   const frameTimerRef = useRef(0)
-  const [frame, setFrame] = useState(1)
   const [containerW, setContainerW] = useState(440)
+  const prevCW = useRef(0)
+  const prevCH = useRef(0)
 
   useEffect(() => {
     const el = containerRef.current
@@ -49,7 +50,7 @@ export default function MotionPathCard() {
       if (frameTimerRef.current >= FRAME_DURATION) {
         frameTimerRef.current -= FRAME_DURATION
         frameRef.current = (frameRef.current % FRAMES) + 1
-        setFrame(frameRef.current)
+        if (spriteRef.current) spriteRef.current.src = '/sprites/00' + frameRef.current + '.svg'
       }
 
       const maxX = containerW - PAD_X * 2 - SPRITE_W
@@ -70,8 +71,14 @@ export default function MotionPathCard() {
 
       // Draw
       const dpr = window.devicePixelRatio || 1
-      canvas.width = containerW * dpr
-      canvas.height = CARD_H * dpr
+      const cw = containerW * dpr
+      const ch = CARD_H * dpr
+      if (prevCW.current !== cw || prevCH.current !== ch) {
+        canvas.width = cw
+        canvas.height = ch
+        prevCW.current = cw
+        prevCH.current = ch
+      }
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.scale(dpr, dpr)
       ctx.clearRect(0, 0, containerW, CARD_H)
@@ -153,7 +160,7 @@ export default function MotionPathCard() {
       />
       <img
         ref={spriteRef}
-        src={`/sprites/00${frame}.svg`}
+        src="/sprites/001.svg"
         alt=""
         width={SPRITE_W}
         height={SPRITE_H}
