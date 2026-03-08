@@ -145,7 +145,7 @@ export default function SpriteRunner() {
         <Link
           ref={backRef}
           href="/work"
-          className="hidden sm:inline-flex sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
+          className="inline-flex absolute top-[20px] left-[20px] sm:fixed sm:top-[32px] sm:left-[32px] z-50 text-[14px] tracking-[-0.2px] items-center gap-[6px] hover:opacity-50 transition-opacity duration-75"
           style={{
             color: "rgba(0,0,0,0.35)",
             fontFamily: "var(--font-geist-mono), monospace",
