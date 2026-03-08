@@ -37,6 +37,7 @@ export default function Work() {
 
   const activeIdx = hoveredIdx ?? touchIdx;
   const colorOffsets = useRef(links.map(() => -Math.random() * 24));
+  const dotColorOffset = useRef(-Math.random() * 24);
 
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -65,17 +66,17 @@ export default function Work() {
     });
   }, []);
 
-  const retriggerArc = useCallback((type: "writing" | "experiment", idx?: number) => {
+  // Bounce-only retrigger using Web Animations API — never touches color cycle
+  const retriggerArc = useCallback(() => {
     if (!dotRef.current) return;
-    const dot = dotRef.current;
-    dot.style.animation = "none";
-    dot.offsetHeight;
-    dot.style.animation = type === "experiment"
-      ? "workDotArc 400ms ease-in-out, workDotColorCycle 24s ease-in-out infinite"
-      : "workDotArc 400ms ease-in-out";
-    dot.style.animationDelay = type === "experiment" && idx !== undefined
-      ? `0s, ${colorOffsets.current[idx]}s`
-      : "";
+    dotRef.current.animate(
+      [
+        { transform: "translateX(0)" },
+        { transform: "translateX(-6px)", offset: 0.4 },
+        { transform: "translateX(0)" },
+      ],
+      { duration: 400, easing: "ease-in-out" }
+    );
   }, []);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -150,7 +151,7 @@ export default function Work() {
       if (idx !== null) {
         setTouchIdx(prev => {
           if (prev !== idx) {
-            retriggerArc(links[idx].type, idx);
+            retriggerArc();
             try { trigger("selection"); } catch {}
             scrollActiveRow(idx);
           }
@@ -174,10 +175,9 @@ export default function Work() {
     if (!el) return;
 
     const newY = el.offsetTop + el.offsetHeight / 2 - 2;
-    const type = links[activeIdx].type;
 
     if (prevIdx.current !== null && prevIdx.current !== activeIdx && dotRef.current && !isTouching.current) {
-      retriggerArc(type, activeIdx);
+      retriggerArc();
     }
 
     prevIdx.current = activeIdx;
@@ -214,11 +214,6 @@ export default function Work() {
             }}
           >
             <style>{`
-              @keyframes workDotArc {
-                0% { transform: translateX(0); }
-                40% { transform: translateX(-6px); }
-                100% { transform: translateX(0); }
-              }
               @keyframes workDotColorCycle {
                 0%, 100% { background-color: #F983CE; }
                 12.5% { background-color: #FA8D11; }
@@ -253,17 +248,18 @@ export default function Work() {
                 const extraProps = link.external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {};
+                const isExperiment = link.type === "experiment";
                 return (
                   <Tag
                     key={link.label}
                     href={link.href}
                     {...extraProps}
                     ref={(el: HTMLElement | null) => { if (el) itemRefs.current.set(i, el); }}
-                    className={`flex items-center justify-between w-full border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? (link.type === "experiment" ? "hover:opacity-60" : "hover:opacity-40") : ""}`}
+                    className={`flex items-center justify-between w-full border-b transition-opacity duration-150 cursor-pointer ${touchIdx === null ? (isExperiment ? "hover:opacity-60" : "hover:opacity-40") : ""}`}
                     style={{
                       borderColor: "rgba(0,0,0,0.06)",
                       padding: "12px 0",
-                      ...(touchIdx !== null ? { opacity: touchIdx === i ? 1 : (link.type === "experiment" ? 0.6 : 0.35) } : {}),
+                      ...(touchIdx !== null ? { opacity: touchIdx === i ? 1 : (isExperiment ? 0.6 : 0.35) } : {}),
                     }}
                     onMouseEnter={() => setHoveredIdx(i)}
                   >
@@ -274,28 +270,45 @@ export default function Work() {
                       >
                         {link.label}
                       </span>
+                      {/* Type label — experiment rows always cycle (hidden by opacity when inactive) */}
                       <span
                         className="text-[12px]"
                         style={{
-                          color: activeIdx === i && link.type === "experiment" ? undefined : "rgba(0,0,0,0.45)",
+                          color: "rgba(0,0,0,0.45)",
                           fontFamily: "var(--font-geist-mono), monospace",
                           opacity: activeIdx === i ? 1 : 0,
                           transition: "opacity 150ms",
-                          ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite", animationDelay: `${colorOffsets.current[i]}s` } : {}),
+                          ...(isExperiment ? { animation: "workTextColorCycle 24s ease-in-out infinite", animationDelay: `${colorOffsets.current[i]}s` } : {}),
                         }}
                       >
                         {link.type === "writing" ? "writing" : "experiment"}
                       </span>
                     </span>
+                    {/* Date — experiment rows use overlay for color cycling, controlled by opacity */}
                     <span
                       className="text-[12px]"
                       style={{
-                        color: activeIdx === i && link.type === "experiment" ? undefined : "rgba(0,0,0,0.3)",
+                        color: "rgba(0,0,0,0.3)",
                         fontFamily: "var(--font-geist-mono), monospace",
-                        ...(activeIdx === i && link.type === "experiment" ? { animation: "workTextColorCycle 24s ease-in-out infinite", animationDelay: `${colorOffsets.current[i]}s` } : {}),
+                        position: isExperiment ? "relative" : undefined,
                       }}
                     >
                       {link.meta}
+                      {isExperiment && (
+                        <span
+                          aria-hidden
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            animation: "workTextColorCycle 24s ease-in-out infinite",
+                            animationDelay: `${colorOffsets.current[i]}s`,
+                            opacity: activeIdx === i ? 1 : 0,
+                            transition: "opacity 150ms",
+                          }}
+                        >
+                          {link.meta}
+                        </span>
+                      )}
                     </span>
                   </Tag>
                 );
@@ -310,9 +323,9 @@ export default function Work() {
                     width: 4,
                     height: 4,
                     borderRadius: "50%",
-                    backgroundColor: activeType === "writing" ? "#030303" : undefined,
+                    backgroundColor: "#030303",
                     animation: activeType === "experiment" ? "workDotColorCycle 24s ease-in-out infinite" : undefined,
-                    animationDelay: activeType === "experiment" && activeIdx !== null ? `${colorOffsets.current[activeIdx]}s` : undefined,
+                    animationDelay: activeType === "experiment" ? `${dotColorOffset.current}s` : undefined,
                     pointerEvents: "none",
                     transition: "top 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                   }}
