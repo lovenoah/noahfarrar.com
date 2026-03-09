@@ -5,6 +5,7 @@ import { DevTools } from "@/components/dev-tools";
 import { HapticsProvider } from "@/components/haptics-provider";
 import { Signature } from "@/components/signature";
 import GlobalSprite from "@/components/global-sprite";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -103,6 +104,7 @@ export default function RootLayout({
         </HapticsProvider>
         <Signature />
         <DevTools />
+        <Analytics />
       </body>
     </html>
   );
